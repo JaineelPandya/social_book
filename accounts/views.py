@@ -1,31 +1,36 @@
 from django.shortcuts import render, redirect
-from django.contrib.auth.forms import UserCreationForm
+from django.http import HttpResponse
 from django.contrib.auth.decorators import login_required
+from django.contrib.auth.views import LoginView
+
+from .forms import CustomUserCreationForm
 
 
 def home(request):
-    if request.user.is_authenticated:
-        return redirect('dashboard')
-    return redirect('login')
+    return HttpResponse("Welcome to Social Book Home Page")
 
 
 def register(request):
     if request.method == "POST":
-        form = UserCreationForm(request.POST)
+        form = CustomUserCreationForm(request.POST)
         if form.is_valid():
             form.save()
             return redirect('login')
     else:
-        form = UserCreationForm()
+        form = CustomUserCreationForm()
 
     return render(request, 'accounts/register.html', {'form': form})
 
 
-@login_required(login_url='login')
+class CustomLoginView(LoginView):
+    template_name = 'accounts/login.html'
+
+
+@login_required
 def dashboard(request):
     return render(request, 'accounts/dashboard.html')
 
 
-@login_required(login_url='login')
+@login_required
 def profile(request):
-    return render(request, 'accounts/profile.html')
+    return render(request, 'accounts/profile.html') 
