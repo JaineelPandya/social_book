@@ -1,0 +1,149 @@
+﻿{% extends 'base/base.html' %}
+{% load static %}
+
+{% block title %}Register - Social Book{% endblock %}
+
+{% block extra_css %}
+	<link rel="stylesheet" type="text/css" href="{% static 'deskapp2-master/src/plugins/jquery-steps/jquery.steps.css' %}">
+{% endblock %}
+
+{% block content %}
+<div class="login-header box-shadow">
+	<div class="container-fluid d-flex justify-content-between align-items-center">
+		<div class="brand-logo">
+			<a href="{% url 'register' %}">
+				<img src="{% static 'deskapp2-master/vendors/images/deskapp-logo.svg' %}" alt="Social Book">
+			</a>
+		</div>
+		<div class="login-menu">
+			<ul>
+				<li><a href="{% url 'login' %}">Login</a></li>
+			</ul>
+		</div>
+	</div>
+</div>
+
+<div class="register-page-wrap d-flex align-items-center flex-wrap justify-content-center">
+	<div class="container">
+		<div class="row align-items-center">
+			<div class="col-md-6 col-lg-7">
+				<img src="{% static 'deskapp2-master/vendors/images/register-page-img.png' %}" alt="Register">
+			</div>
+			<div class="col-md-6 col-lg-5">
+				<div class="register-box bg-white box-shadow border-radius-10">
+					<div class="register-title">
+						<h2 class="text-center text-primary">Create Your Account</h2>
+						<p class="text-center text-muted">Join Social Book today</p>
+					</div>
+
+					{% if form.non_field_errors %}
+						<div class="alert alert-danger" role="alert">
+							<strong>Error!</strong>
+							{% for error in form.non_field_errors %}
+								<p>{{ error }}</p>
+							{% endfor %}
+						</div>
+					{% endif %}
+
+					<form method="post" class="form-horizontal">
+						{% csrf_token %}
+
+						<!-- Username Field -->
+						<div class="form-group">
+							<label class="col-form-label">Username <span class="text-danger">*</span></label>
+							<div>
+								{{ form.username }}
+								{% if form.username.errors %}
+									<div class="text-danger small mt-2">{{ form.username.errors }}</div>
+								{% endif %}
+								{% if form.username.help_text %}
+									<small class="form-text text-muted">{{ form.username.help_text|safe }}</small>
+								{% endif %}
+							</div>
+						</div>
+
+						<!-- Password Field -->
+						<div class="form-group">
+							<label class="col-form-label">Password <span class="text-danger">*</span></label>
+							<div>
+								{{ form.password1 }}
+								{% if form.password1.errors %}
+									<div class="text-danger small mt-2">{{ form.password1.errors }}</div>
+								{% endif %}
+								{% if form.password1.help_text %}
+									<small class="form-text text-muted d-block mt-2">{{ form.password1.help_text|safe }}</small>
+								{% endif %}
+							</div>
+						</div>
+
+						<!-- Confirm Password Field -->
+						<div class="form-group">
+							<label class="col-form-label">Confirm Password <span class="text-danger">*</span></label>
+							<div>
+								{{ form.password2 }}
+								{% if form.password2.errors %}
+									<div class="text-danger small mt-2">{{ form.password2.errors }}</div>
+								{% endif %}
+								{% if form.password2.help_text %}
+									<small class="form-text text-muted">{{ form.password2.help_text|safe }}</small>
+								{% endif %}
+							</div>
+						</div>
+
+						<!-- Agreement Checkbox -->
+						<div class="form-group">
+							<div class="custom-control custom-checkbox">
+								<input type="checkbox" class="custom-control-input" id="agreeTerms" required>
+								<label class="custom-control-label" for="agreeTerms">
+									I agree to the terms and conditions
+								</label>
+							</div>
+						</div>
+
+						<!-- Submit Button -->
+						<div class="form-group">
+							<button type="submit" class="btn btn-primary btn-lg btn-block">Create Account</button>
+						</div>
+
+						<!-- Login Link -->
+						<div class="text-center">
+							<p>Already have an account? <a href="{% url 'login' %}" class="text-primary">Sign in here</a></p>
+						</div>
+					</form>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+
+<style>
+	.form-control, .form-control-lg {
+		border: 1px solid #d9d9d9;
+		border-radius: 4px;
+		padding: 0.75rem 1rem;
+		font-size: 1rem;
+	}
+	.form-control:focus, .form-control-lg:focus {
+		border-color: #4680ff;
+		box-shadow: 0 0 0 0.2rem rgba(70, 128, 255, 0.25);
+	}
+	.form-group {
+		margin-bottom: 1.5rem;
+	}
+	.form-group label {
+		font-weight: 500;
+		color: #333;
+		margin-bottom: 0.5rem;
+	}
+	.text-danger {
+		color: #dc3545;
+	}
+	.form-text {
+		display: block;
+	}
+	ul {
+		margin-left: 1.5rem;
+		font-size: 0.875rem;
+	}
+</style>
+{% endblock %}
