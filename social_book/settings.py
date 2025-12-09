@@ -42,6 +42,7 @@ INSTALLED_APPS = [
     'rest_framework',
     'djoser',
     'authors',
+    "rest_framework.authtoken",
 ]
 
 MIDDLEWARE = [
@@ -78,13 +79,13 @@ WSGI_APPLICATION = 'social_book.wsgi.application'
 # https://docs.djangoproject.com/en/6.0/ref/settings/#databases
 
 DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.postgresql',
-        'NAME': 'social_book',
-        'USER': 'postgres',
-        'PASSWORD': 'Jhp@45678',
-        'HOST': 'localhost',
-        'PORT': '5432',
+    "default": {
+        "ENGINE": "django.db.backends.postgresql",
+        "NAME": "social_book",
+        "USER": "postgres",
+        "PASSWORD": "simple123",
+        "HOST": "localhost",
+        "PORT": "5432",
     }
 }
 
@@ -132,3 +133,17 @@ MEDIA_ROOT = BASE_DIR / 'media'
 LOGIN_REDIRECT_URL = '/accounts/dashboard/'
 LOGOUT_REDIRECT_URL = '/accounts/login/'
 AUTH_USER_MODEL = 'accounts.CustomUser'
+
+REST_FRAMEWORK = {
+    "DEFAULT_AUTHENTICATION_CLASSES": [
+        "rest_framework.authentication.TokenAuthentication",
+    ],
+    "DEFAULT_PERMISSION_CLASSES": [
+        "rest_framework.permissions.IsAuthenticated",
+    ],
+}
+
+DJOSER = {
+    "LOGIN_FIELD": "email",
+    "TOKEN_MODEL": "rest_framework.authtoken.models.Token",
+}
