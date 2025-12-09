@@ -18,8 +18,8 @@ class AuthorsAndSellersListView(ListView):
 
         User = get_user_model()
 
-        qs = User.objects.select_related('profile').filter(
-            profile__public_visibility=True,
+        qs = User.objects.filter(
+            public_visibility=True,
             is_active=True
         ).order_by('-date_joined')  # or custom ordering
 

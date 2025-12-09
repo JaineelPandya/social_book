@@ -9,6 +9,15 @@ urlpatterns = [
     path('logout/', auth_views.LogoutView.as_view(), name='logout'),
     path('dashboard/', views.dashboard, name='dashboard'),
     path('profile/', views.profile, name='profile'),
+    
+    # Upload books
+    path('upload-books/', views.upload_books, name='upload_books'),
+    path('file/<int:file_id>/', views.file_detail, name='file_detail'),
+    path('file/<int:file_id>/delete/', views.delete_file, name='delete_file'),
+    
+    # PostgreSQL Dashboard (SQLAlchemy)
+    path('postgres-dashboard/', views.postgres_dashboard, name='postgres_dashboard'),
+    
     # Authors listing (authors app defines `app_name = "authors"`)
     path('authors/', include('authors.urls', namespace='authors')),
 ]
