@@ -12,6 +12,8 @@ urlpatterns = [
     
     # Upload books
     path('upload-books/', views.upload_books, name='upload_books'),
+    path('my-books/', views.my_books, name='my_books'),
+    path('send-test-email/', views.send_test_email, name='send_test_email'),
     path('file/<int:file_id>/', views.file_detail, name='file_detail'),
     path('file/<int:file_id>/delete/', views.delete_file, name='delete_file'),
     

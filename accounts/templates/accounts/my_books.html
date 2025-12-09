@@ -1,0 +1,16 @@
+{% extends 'accounts/base.html' %}
+{% block content %}
+<h1>My Books</h1>
+{% if uploaded_files %}
+<ul>
+  {% for f in uploaded_files %}
+    <li>
+      <a href="{% url 'file_detail' f.id %}">{{ f.title }}</a>
+      - {{ f.get_file_size_display }} - {{ f.uploaded_at|date:"Y-m-d" }}
+    </li>
+  {% endfor %}
+</ul>
+{% else %}
+<p>No files found. <a href="{% url 'upload_books' %}">Upload a book</a>.</p>
+{% endif %}
+{% endblock %}

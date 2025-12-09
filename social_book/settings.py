@@ -11,6 +11,7 @@ https://docs.djangoproject.com/en/6.0/ref/settings/
 """
 
 from pathlib import Path
+import os
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -78,16 +79,26 @@ WSGI_APPLICATION = 'social_book.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/6.0/ref/settings/#databases
 
-DATABASES = {
-    "default": {
-        "ENGINE": "django.db.backends.postgresql",
-        "NAME": "social_book",
-        "USER": "postgres",
-        "PASSWORD": "simple123",
-        "HOST": "localhost",
-        "PORT": "5432",
+# Database configuration: prefer PostgreSQL but allow SQLite fallback for local dev.
+# Configure Postgres credentials via environment variables, or set USE_SQLITE=1 to use SQLite.
+if os.environ.get('USE_SQLITE') == '1':
+    DATABASES = {
+        'default': {
+            'ENGINE': 'django.db.backends.sqlite3',
+            'NAME': BASE_DIR / 'db.sqlite3',
+        }
     }
-}
+else:
+    DATABASES = {
+        'default': {
+            'ENGINE': os.environ.get('DB_ENGINE', 'django.db.backends.postgresql'),
+            'NAME': os.environ.get('POSTGRES_DB', 'social_book'),
+            'USER': os.environ.get('POSTGRES_USER', 'postgres'),
+            'PASSWORD': os.environ.get('POSTGRES_PASSWORD', 'simple123'),
+            'HOST': os.environ.get('POSTGRES_HOST', 'localhost'),
+            'PORT': os.environ.get('POSTGRES_PORT', '5432'),
+        }
+    }
 
 
 # Password validation
@@ -147,3 +158,15 @@ DJOSER = {
     "LOGIN_FIELD": "email",
     "TOKEN_MODEL": "rest_framework.authtoken.models.Token",
 }
+
+# Email (SMTP) configuration - set these in environment or fill in directly for testing
+EMAIL_BACKEND = os.environ.get('EMAIL_BACKEND', 'django.core.mail.backends.smtp.EmailBackend')
+EMAIL_HOST = os.environ.get('EMAIL_HOST', 'smtp.gmail.com')
+EMAIL_USE_TLS = os.environ.get('EMAIL_USE_TLS', 'True') in [True, 'True', 'true', '1']
+EMAIL_PORT = int(os.environ.get('EMAIL_PORT', 587))
+EMAIL_HOST_USER = os.environ.get('EMAIL_HOST_USER', '')  # sender's email-id
+EMAIL_HOST_PASSWORD = os.environ.get('EMAIL_HOST_PASSWORD', '')  # app password or account password
+
+# Notes:
+# - For Gmail, you may need to create an app password or disable 2FA per your account settings.
+# - Do NOT commit real credentials to the repository. Use environment variables instead.

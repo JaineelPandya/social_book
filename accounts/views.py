@@ -5,6 +5,8 @@ from django.contrib.auth.views import LoginView
 from django.contrib import messages
 from django.views.decorators.http import require_http_methods
 import os
+from django.conf import settings
+from django.core.mail import send_mail
 
 from .forms import CustomUserCreationForm, UploadFileForm
 from .models import UploadedFile
@@ -143,3 +145,35 @@ def postgres_dashboard(request):
     #     context['error_message'] = f"Database error: {str(e)}"
     
     return render(request, 'accounts/postgres_dashboard.html', context)
+
+
+@login_required
+def send_test_email(request):
+    """Send a simple test email to the logged-in user using EMAIL settings."""
+    subject = 'Social Book - Test Email'
+    message = 'This is a test email sent from the Social Book application.'
+    from_email = settings.EMAIL_HOST_USER or 'webmaster@localhost'
+    recipient_list = [request.user.email]
+
+    try:
+        send_mail(subject, message, from_email, recipient_list, fail_silently=False)
+        messages.success(request, 'Test email sent to %s' % request.user.email)
+    except Exception as e:
+        messages.error(request, f'Failed to send test email: {e}')
+
+    return redirect('dashboard')
+
+
+@login_required
+def my_books(request):
+    """Wrapper view for 'My Books' dashboard.
+
+    - If user has uploaded files (active), render the list view.
+    - If user has no uploads, redirect to `upload_books` to prompt upload.
+    """
+    user_files = request.user.uploaded_files.filter(is_active=True)
+    if user_files.exists():
+        context = {'uploaded_files': user_files}
+        return render(request, 'accounts/my_books.html', context)
+    # No files uploaded yet - redirect to upload page
+    return redirect('upload_books')

@@ -13,6 +13,10 @@ urlpatterns = [
     path('accounts/', include('accounts.urls')),
     path('login/', RedirectView.as_view(url='/accounts/login/', permanent=False)),
     path('register/', RedirectView.as_view(url='/accounts/register/', permanent=False)),
+    # API and auth endpoints
+    path('api/auth/', include('djoser.urls')),
+    path('api/auth/', include('djoser.urls.authtoken')),
+    path('api/', include('accounts.api_urls')),
 ]
 
 if settings.DEBUG:
