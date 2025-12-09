@@ -6,4 +6,5 @@ User = get_user_model()
 class UserListSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
-        fields = ["id", "username", "email", "is_active"]
+        # CustomUser uses email as the identifier (no username field)
+        fields = ["id", "email", "first_name", "last_name", "is_active", "public_visibility"]

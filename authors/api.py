@@ -9,7 +9,8 @@ class AuthorsSellersListAPI(generics.ListAPIView):
     serializer_class = UserListSerializer
 
     def get_queryset(self):
-        return User.objects.select_related('profile').filter(
-            profile__public_visibility=True,   
+        # CustomUser stores visibility on the user model (no related profile)
+        return User.objects.filter(
+            public_visibility=True,
             is_active=True
-        )
+        ).order_by('-date_joined')

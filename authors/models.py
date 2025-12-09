@@ -12,4 +12,5 @@ class UserProfile(models.Model):
     is_seller = models.BooleanField(default=False)
 
     def __str__(self):
-        return f"{self.user.get_full_name() or self.user.username} profile"
+        # CustomUser uses email as the primary identifier
+        return f"{self.user.get_full_name() or self.user.email} profile"

@@ -1,0 +1,330 @@
+{% extends 'base/base.html' %}
+{% load static %}
+
+{% block title %}PostgreSQL Dashboard - Social Book{% endblock %}
+
+{% block extra_css %}
+<style>
+    .postgres-container {
+        background: white;
+        border-radius: 8px;
+        padding: 2rem;
+        margin-bottom: 2rem;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.08);
+    }
+    
+    .section-title {
+        font-size: 1.5rem;
+        font-weight: 700;
+        color: #1f2849;
+        margin-bottom: 1.5rem;
+        padding-bottom: 0.75rem;
+        border-bottom: 2px solid #4680ff;
+    }
+    
+    .stats-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+        gap: 1.5rem;
+        margin-bottom: 2rem;
+    }
+    
+    .stat-card {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        padding: 1.5rem;
+        border-radius: 8px;
+        box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
+    }
+    
+    .stat-card.users {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    }
+    
+    .stat-card.files {
+        background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+    }
+    
+    .stat-card.storage {
+        background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+    }
+    
+    .stat-label {
+        font-size: 0.9rem;
+        opacity: 0.9;
+        margin-bottom: 0.5rem;
+    }
+    
+    .stat-value {
+        font-size: 2rem;
+        font-weight: 700;
+    }
+    
+    .alert-info {
+        background: #e3f2fd;
+        border-left: 4px solid #2196f3;
+        padding: 1rem;
+        border-radius: 4px;
+        color: #1976d2;
+        margin-bottom: 1.5rem;
+    }
+    
+    .table-responsive {
+        overflow-x: auto;
+    }
+    
+    .uploads-table {
+        width: 100%;
+        border-collapse: collapse;
+        font-size: 0.9rem;
+    }
+    
+    .uploads-table thead {
+        background: #f5f6fb;
+        border-bottom: 2px solid #e0e0e0;
+    }
+    
+    .uploads-table th {
+        padding: 1rem;
+        text-align: left;
+        font-weight: 600;
+        color: #1f2849;
+    }
+    
+    .uploads-table td {
+        padding: 1rem;
+        border-bottom: 1px solid #e0e0e0;
+    }
+    
+    .uploads-table tbody tr:hover {
+        background: #f9f9f9;
+    }
+    
+    .badge {
+        display: inline-block;
+        padding: 0.35rem 0.7rem;
+        border-radius: 20px;
+        font-size: 0.8rem;
+        font-weight: 600;
+    }
+    
+    .badge-public {
+        background: #d4edda;
+        color: #155724;
+    }
+    
+    .badge-private {
+        background: #f8d7da;
+        color: #721c24;
+    }
+    
+    .badge-followers {
+        background: #cfe2ff;
+        color: #084298;
+    }
+    
+    .setup-instructions {
+        background: #fff3cd;
+        border-left: 4px solid #ffc107;
+        padding: 1.5rem;
+        border-radius: 4px;
+        color: #856404;
+    }
+    
+    .setup-instructions h3 {
+        margin-top: 0;
+        color: #1f2849;
+    }
+    
+    .setup-instructions ol {
+        margin-bottom: 1rem;
+    }
+    
+    .setup-instructions li {
+        margin-bottom: 0.5rem;
+    }
+    
+    .code-block {
+        background: #f5f5f5;
+        border: 1px solid #ddd;
+        padding: 1rem;
+        border-radius: 4px;
+        font-family: monospace;
+        font-size: 0.85rem;
+        overflow-x: auto;
+        margin: 0.5rem 0;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="page-wrapper">
+    <div class="header">
+        <div class="container-fluid">
+            <h1 class="welcome-message" style="font-size: 1.75rem;">📊 PostgreSQL Dashboard</h1>
+        </div>
+    </div>
+
+    <div class="container-fluid pd-20 pd-sm-40">
+        {% if db_connected %}
+            <!-- Stats Section -->
+            <div class="postgres-container">
+                <h2 class="section-title">Database Statistics</h2>
+                
+                {% if users_summary %}
+                    <div class="stats-grid">
+                        <div class="stat-card users">
+                            <div class="stat-label">Total Users</div>
+                            <div class="stat-value">{{ users_summary.total_users }}</div>
+                        </div>
+                        <div class="stat-card users">
+                            <div class="stat-label">Public Users</div>
+                            <div class="stat-value">{{ users_summary.public_users }}</div>
+                        </div>
+                        <div class="stat-card files">
+                            <div class="stat-label">Active Users</div>
+                            <div class="stat-value">{{ users_summary.active_users }}</div>
+                        </div>
+                    </div>
+                {% endif %}
+                
+                {% if files_stats %}
+                    <div class="stats-grid">
+                        <div class="stat-card files">
+                            <div class="stat-label">Total Files</div>
+                            <div class="stat-value">{{ files_stats.total_files }}</div>
+                        </div>
+                        <div class="stat-card storage">
+                            <div class="stat-label">Total Size</div>
+                            <div class="stat-value">{{ files_stats.total_size|filesizeformat }}</div>
+                        </div>
+                        <div class="stat-card storage">
+                            <div class="stat-label">Average Size</div>
+                            <div class="stat-value">{{ files_stats.avg_size|filesizeformat }}</div>
+                        </div>
+                        <div class="stat-card storage">
+                            <div class="stat-label">Max Size</div>
+                            <div class="stat-value">{{ files_stats.max_size|filesizeformat }}</div>
+                        </div>
+                        <div class="stat-card files">
+                            <div class="stat-label">Users w/ Files</div>
+                            <div class="stat-value">{{ files_stats.users_with_files }}</div>
+                        </div>
+                    </div>
+                {% endif %}
+            </div>
+
+            <!-- Recent Uploads Section -->
+            {% if recent_uploads %}
+                <div class="postgres-container">
+                    <h2 class="section-title">Recent Uploads (Last 10)</h2>
+                    <div class="table-responsive">
+                        <table class="uploads-table">
+                            <thead>
+                                <tr>
+                                    <th>Title</th>
+                                    <th>User</th>
+                                    <th>File Size</th>
+                                    <th>Visibility</th>
+                                    <th>Upload Date</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for file in recent_uploads %}
+                                    <tr>
+                                        <td>{{ file.title }}</td>
+                                        <td>{{ file.user_email }}</td>
+                                        <td>{{ file.file_size|filesizeformat }}</td>
+                                        <td>
+                                            <span class="badge badge-{{ file.visibility|lower }}">
+                                                {{ file.visibility|upper }}
+                                            </span>
+                                        </td>
+                                        <td>{{ file.uploaded_at|date:"M d, Y H:i" }}</td>
+                                    </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            {% endif %}
+
+        {% else %}
+            <!-- PostgreSQL Not Connected -->
+            <div class="postgres-container">
+                <div class="alert alert-warning alert-dismissible fade show" role="alert">
+                    <strong>⚠️ PostgreSQL Not Configured</strong>
+                    <p style="margin: 1rem 0 0 0;">{{ error_message }}</p>
+                </div>
+
+                <div class="setup-instructions">
+                    <h3>🔧 Setup Instructions</h3>
+                    <ol>
+                        <li><strong>Install PostgreSQL</strong> on your machine (if not already installed)</li>
+                        <li><strong>Create a database:</strong>
+                            <div class="code-block">CREATE DATABASE social_book_pg;</div>
+                        </li>
+                        <li><strong>Create a database user:</strong>
+                            <div class="code-block">CREATE USER social_user WITH PASSWORD 'your_password';</div>
+                        </li>
+                        <li><strong>Grant privileges:</strong>
+                            <div class="code-block">GRANT ALL PRIVILEGES ON DATABASE social_book_pg TO social_user;</div>
+                        </li>
+                        <li><strong>Update Django settings.py</strong> with PostgreSQL database configuration:
+                            <div class="code-block">
+DATABASES = {<br/>
+&nbsp;&nbsp;'default': {<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;'ENGINE': 'django.db.backends.postgresql',<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;'NAME': 'social_book_pg',<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;'USER': 'social_user',<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;'PASSWORD': 'your_password',<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;'HOST': 'localhost',<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;'PORT': '5432',<br/>
+&nbsp;&nbsp;}<br/>
+}
+                            </div>
+                        </li>
+                        <li><strong>Uncomment the PostgreSQL code</strong> in <code>accounts/views.py</code> in the <code>postgres_dashboard</code> view</li>
+                        <li><strong>Run migrations:</strong>
+                            <div class="code-block">python manage.py migrate</div>
+                        </li>
+                        <li><strong>Restart the server:</strong>
+                            <div class="code-block">python manage.py runserver</div>
+                        </li>
+                    </ol>
+                </div>
+
+                <div style="margin-top: 2rem; padding: 1rem; background: #e3f2fd; border-left: 4px solid #2196f3; border-radius: 4px; color: #1976d2;">
+                    <strong>💡 Tip:</strong> The <code>postgres_utils.py</code> module provides helper functions for SQLAlchemy queries:
+                    <ul style="margin: 0.5rem 0 0 0;">
+                        <li><code>get_users_summary(db_url)</code> - User statistics</li>
+                        <li><code>get_files_stats(db_url)</code> - File upload statistics</li>
+                        <li><code>get_recent_uploads(db_url, limit=10)</code> - Recent uploads</li>
+                    </ul>
+                </div>
+            </div>
+        {% endif %}
+
+        <!-- SQLAlchemy Code Example -->
+        <div class="postgres-container" style="margin-top: 2rem;">
+            <h2 class="section-title">💻 SQLAlchemy Usage Example</h2>
+            <p>The <code>accounts/postgres_utils.py</code> module provides direct SQL access via SQLAlchemy:</p>
+            <div class="code-block" style="margin: 1rem 0;">
+from accounts.postgres_utils import PostgreSQLConnection<br/>
+<br/>
+db_url = "postgresql://username:password@localhost:5432/database_name"<br/>
+<br/>
+# Execute custom query<br/>
+results = PostgreSQLConnection.execute_query(<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;"SELECT * FROM accounts_uploadedfile WHERE is_active = true LIMIT 5;",<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;db_url<br/>
+)<br/>
+<br/>
+# Or use helper functions<br/>
+from accounts.postgres_utils import get_users_summary<br/>
+summary = get_users_summary(db_url)
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

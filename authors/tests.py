@@ -6,13 +6,16 @@ User = get_user_model()
 
 class AuthorsAndSellersTests(TestCase):
     def test_public_visibility_filter(self):
-        u1 = User.objects.create_user(username='a', email='a@example.com', password='pw')
-        u2 = User.objects.create_user(username='b', email='b@example.com', password='pw')
-        u1.profile.public_visibility = True
-        u1.profile.save()
-        u2.profile.public_visibility = False
-        u2.profile.save()
+        # Create users using email (CustomUser uses email as USERNAME_FIELD)
+        u1 = User.objects.create_user(email='a@example.com', password='pw')
+        u2 = User.objects.create_user(email='b@example.com', password='pw')
+        # set visibility on user model
+        u1.public_visibility = True
+        u1.save()
+        u2.public_visibility = False
+        u2.save()
 
         resp = self.client.get('/authors-sellers/')
-        self.assertContains(resp, 'a')   # user a should be visible
-        self.assertNotContains(resp, 'b')  # user b not visible
+        # check presence by email
+        self.assertContains(resp, 'a@example.com')   # user a should be visible
+        self.assertNotContains(resp, 'b@example.com')  # user b not visible
