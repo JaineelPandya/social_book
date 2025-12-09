@@ -75,6 +75,10 @@ Thumbs.db
 # local settings and secrets
 local_settings.py
 .envrc
+settings_local.py
+secrets.json
+*.key
+*.pem
 
 # Editor/IDE extras
 *.iml
@@ -87,3 +91,24 @@ local_settings.py
 
 # Celery
 celerybeat-schedule
+
+# Environment variable files (all variations)
+.env*
+!.env.example
+
+# OS generated files
+.DS_Store
+.AppleDouble
+.LSOverride
+*.thumb
+
+# IDE temporary files
+*.sublime-project
+*.sublime-workspace
+*.swp
+*.swo
+*~
+
+# Credentials
+credentials.json
+token.json
