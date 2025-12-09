@@ -1,0 +1,58 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block content %}
+<div class="container">
+  <h1>Authors & Sellers</h1>
+
+  <form method="get" class="mb-3">
+    <div style="display:flex; gap:8px; align-items:center;">
+      <input type="text" name="q" placeholder="Search name or email" value="{{ request.GET.q|default:'' }}" />
+      <input type="number" name="min_age" placeholder="Min age" value="{{ request.GET.min_age|default:'' }}" />
+      <input type="number" name="max_age" placeholder="Max age" value="{{ request.GET.max_age|default:'' }}" />
+      <select name="ordering">
+        <option value="">Sort</option>
+        <option value="email" {% if request.GET.ordering == 'email' %}selected{% endif %}>Email ASC</option>
+        <option value="-created_at" {% if request.GET.ordering == '-created_at' %}selected{% endif %}>Newest</option>
+        <option value="birth_year" {% if request.GET.ordering == 'birth_year' %}selected{% endif %}>Birth Year</option>
+      </select>
+      <button type="submit" class="btn">Filter</button>
+      <a href="{% url 'authors_list' %}" class="btn">Reset</a>
+    </div>
+  </form>
+
+  <div class="authors-grid">
+    {% for user in authors %}
+      <div class="author-card">
+        {% if user.profile_picture %}
+          <img src="{{ user.profile_picture.url }}" alt="{{ user.email }}" width="80" height="80" />
+        {% else %}
+          <img src="{% static 'default_avatar.png' %}" alt="avatar" width="80" height="80"/>
+        {% endif %}
+        <h3>{{ user.get_full_name|default:user.email }}</h3>
+        <p>Email: {{ user.email }}</p>
+        {% if user.birth_year %}
+          <p>Age: {{ user.age }}</p>
+        {% endif %}
+        <p>{{ user.bio|truncatechars:120 }}</p>
+        <a href="{% url 'author_detail' user.pk %}">View profile</a>  <!-- create if desired -->
+      </div>
+    {% empty %}
+      <p>No public authors found.</p>
+    {% endfor %}
+  </div>
+
+  <!-- Pagination -->
+  {% if is_paginated %}
+    <div class="pagination">
+      {% if page_obj.has_previous %}
+        <a href="?{% querystring request GET 'page' page_obj.previous_page_number %}">&laquo; Prev</a>
+      {% endif %}
+      <span>Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}</span>
+      {% if page_obj.has_next %}
+        <a href="?{% querystring request GET 'page' page_obj.next_page_number %}">Next &raquo;</a>
+      {% endif %}
+    </div>
+  {% endif %}
+</div>
+{% endblock %}
