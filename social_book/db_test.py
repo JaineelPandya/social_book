@@ -1,23 +1,48 @@
 from sqlalchemy import create_engine, text
+import urllib.parse
 
-DB_USER = "postgres"
-DB_PASSWORD = "Jhp@45678"
-DB_HOST = "localhost"
-DB_PORT = "5432"
-DB_NAME = "postgres"
+# ✅ Your actual DB credentials
+USER = "postgres"
+PASSWORD = "Jhp@45678"
+HOST = "localhost"
+PORT = "5432"
+DB_NAME = "social_book"
 
-DATABASE_URL = f"postgresql://{DB_USER}:{DB_PASSWORD}@{DB_HOST}:{DB_PORT}/{DB_NAME}"
+# ✅ Encode password safely
+ENCODED_PASSWORD = urllib.parse.quote_plus(PASSWORD)
 
-print("✅ Using DB URL:", DATABASE_URL)
+DB_URL = f"postgresql://{USER}:{ENCODED_PASSWORD}@{HOST}:{PORT}/{DB_NAME}"
 
-engine = create_engine(DATABASE_URL)
+print("✅ Using encoded DB URL (password hidden)")
+
+engine = create_engine(DB_URL)
 
 with engine.connect() as connection:
-    print("✅ Connected to PostgreSQL successfully")
+    print("\n✅ Connected to DB:", DB_NAME)
 
-    query = text("SELECT datname FROM pg_database;")
-    result = connection.execute(query)
+    # ✅ Show all tables
+    result = connection.execute(text("""
+        SELECT table_name
+        FROM information_schema.tables
+        WHERE table_schema = 'public'
+    """))
 
-    print("\n✅ Databases found:\n")
-    for row in result:
-        print(row[0])
+    tables = [row[0] for row in result]
+
+    print("\n✅ Tables in database:")
+    for table in tables:
+        print("-", table)
+
+    # ✅ Fetch users from correct Django custom user table
+    if "accounts_customuser" in tables:
+        print("\n✅ Data from accounts_customuser:\n")
+
+        users = connection.execute(text("""
+            SELECT id, email, is_active, is_staff
+            FROM accounts_customuser
+        """))
+
+        for user in users:
+            print(dict(user._mapping))
+    else:
+        print("\n❌ accounts_customuser table not found.")

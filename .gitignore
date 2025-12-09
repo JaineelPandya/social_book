@@ -65,3 +65,25 @@ Thumbs.db
 *.tmp
 *.bak
 .cache/
+
+# Additional ignores
+# Python environment caches and type checkers
+.mypy_cache/
+# virtualenvs sometimes named .venv
+.venv/
+
+# local settings and secrets
+local_settings.py
+.envrc
+
+# Editor/IDE extras
+*.iml
+.idea/*
+.vscode/*
+
+# Django migrations for third-party apps (keep app migrations in source control normally)
+# Example: ignore any accidental compiled migration caches
+*.pyc
+
+# Celery
+celerybeat-schedule
