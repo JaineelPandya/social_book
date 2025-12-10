@@ -1,0 +1,226 @@
+{% extends 'base/base.html' %}
+{% load static %}
+
+{% block title %}Welcome - Social Book{% endblock %}
+
+{% block extra_css %}
+<style>
+  .welcome-hero {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 85vh;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: #fff;
+    text-align: center;
+    overflow: hidden;
+    position: relative;
+  }
+
+  .welcome-decor {
+    position: absolute;
+    left: -15%;
+    bottom: -15%;
+    width: 70vw;
+    height: 70vw;
+    opacity: 0.15;
+    filter: blur(40px);
+    background: radial-gradient(circle at 50% 50%, #ffd89b, transparent 25%),
+      radial-gradient(circle at 30% 70%, #19547b, transparent 30%);
+    animation: float 8s ease-in-out infinite;
+  }
+
+  @keyframes float {
+
+    0%,
+    100% {
+      transform: translateY(0px) rotate(0deg);
+    }
+
+    50% {
+      transform: translateY(-20px) rotate(5deg);
+    }
+  }
+
+  .welcome-content {
+    position: relative;
+    z-index: 10;
+    max-width: 600px;
+    padding: 2rem;
+  }
+
+  .welcome-icon {
+    font-size: 4rem;
+    margin-bottom: 1rem;
+    animation: bounce 2s ease-in-out infinite;
+  }
+
+  @keyframes bounce {
+
+    0%,
+    100% {
+      transform: translateY(0);
+    }
+
+    50% {
+      transform: translateY(-10px);
+    }
+  }
+
+  .welcome-content h1 {
+    font-size: 3.5rem;
+    margin: 0 0 0.75rem;
+    font-weight: 800;
+    animation: slideInDown 0.8s ease-out;
+  }
+
+  @keyframes slideInDown {
+    from {
+      opacity: 0;
+      transform: translateY(-30px);
+    }
+
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  .welcome-content p {
+    font-size: 1.25rem;
+    opacity: 0.95;
+    margin-bottom: 2rem;
+    line-height: 1.6;
+    animation: fadeIn 1s ease-out 0.3s both;
+  }
+
+  @keyframes fadeIn {
+    from {
+      opacity: 0;
+    }
+
+    to {
+      opacity: 0.95;
+    }
+  }
+
+  .welcome-user {
+    font-size: 1.4rem;
+    font-weight: 600;
+    margin-bottom: 0.5rem;
+    animation: fadeIn 1s ease-out 0.5s both;
+  }
+
+  .btn-dashboard {
+    display: inline-block;
+    background: #ffffff;
+    color: #667eea;
+    padding: 1rem 2.5rem;
+    border-radius: 50px;
+    font-weight: 700;
+    font-size: 1.1rem;
+    text-decoration: none;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+    transform: translateY(0);
+    transition: all 0.3s ease;
+    animation: scaleIn 0.6s ease-out 0.7s both;
+  }
+
+  @keyframes scaleIn {
+    from {
+      opacity: 0;
+      transform: scale(0.8);
+    }
+
+    to {
+      opacity: 1;
+      transform: scale(1);
+    }
+  }
+
+  .btn-dashboard:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 15px 40px rgba(0, 0, 0, 0.4);
+    background: #ffd89b;
+    color: #764ba2;
+  }
+
+  .success-checkmark {
+    display: inline-block;
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.2);
+    margin-bottom: 1.5rem;
+    position: relative;
+    animation: checkmarkPop 0.6s ease-out;
+  }
+
+  @keyframes checkmarkPop {
+    0% {
+      transform: scale(0);
+      opacity: 0;
+    }
+
+    50% {
+      transform: scale(1.1);
+    }
+
+    100% {
+      transform: scale(1);
+      opacity: 1;
+    }
+  }
+
+  .success-checkmark::after {
+    content: '✓';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    font-size: 3rem;
+    color: #fff;
+    font-weight: bold;
+  }
+
+  @media (max-width: 768px) {
+    .welcome-content h1 {
+      font-size: 2.5rem;
+    }
+
+    .welcome-content p {
+      font-size: 1.1rem;
+    }
+
+    .btn-dashboard {
+      padding: 0.85rem 2rem;
+      font-size: 1rem;
+    }
+  }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="welcome-hero">
+  <div class="welcome-decor" aria-hidden="true"></div>
+
+  <div class="welcome-content">
+    <div class="success-checkmark"></div>
+
+    <h1>🎉 Welcome!</h1>
+
+    <p class="welcome-user">
+      Your account has been created successfully!
+    </p>
+
+    <p>
+      You're all set to explore Social Book. Start uploading your books,
+      discover amazing authors, and connect with a community of readers and writers.
+    </p>
+
+    <a href="{% url 'dashboard' %}" class="btn-dashboard">
+      Go to Dashboard
+    </a>
+  </div>
+</div>
+{% endblock %}

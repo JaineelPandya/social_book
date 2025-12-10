@@ -36,17 +36,24 @@ def home(request):
 
 
 def register(request):
-    """User registration view."""
+    """User registration view with auto-login."""
     if request.method == "POST":
         form = CustomUserCreationForm(request.POST)
         if form.is_valid():
-            form.save()
-            messages.success(request, "Account created! Please log in.")
-            return redirect('login')
+            user = form.save()
+            # Auto-login the user after registration
+            user.backend = 'django.contrib.auth.backends.ModelBackend'
+            django_login(request, user)
+            return redirect('welcome')
     else:
         form = CustomUserCreationForm()
 
     return render(request, 'accounts/register.html', {'form': form})
+
+
+def welcome(request):
+    """Welcome/landing page shown after successful registration."""
+    return render(request, 'accounts/welcome.html')
 
 
 class CustomLoginView(LoginView):

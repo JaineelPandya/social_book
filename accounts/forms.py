@@ -1,24 +1,41 @@
-from django.contrib.auth.forms import UserCreationForm
 from django import forms
+from django.contrib.auth.forms import UserCreationForm
 from .models import CustomUser, UploadedFile
 
-
 class CustomUserCreationForm(UserCreationForm):
+    email = forms.EmailField(
+        required=True,
+        widget=forms.EmailInput(attrs={'class': 'form-control', 'placeholder': 'Email'})
+    )
+    # optional public display name (not the same as username)
+    display_name = forms.CharField(
+        required=False,
+        widget=forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Display name (optional)'})
+    )
+    password1 = forms.CharField(
+        widget=forms.PasswordInput(attrs={'class': 'form-control', 'placeholder': 'Password'})
+    )
+    password2 = forms.CharField(
+        widget=forms.PasswordInput(attrs={'class': 'form-control', 'placeholder': 'Confirm Password'})
+    )
+
     class Meta:
         model = CustomUser
-        fields = (
-            "email",
-            "birth_year",
-            "address",
-            "public_visibility",
-            "password1",
-            "password2",
-        )
+        # if your model doesn't have display_name, remove it from the tuple
+        fields = ("email", "display_name", "birth_year", "address", "public_visibility", "password1", "password2")
+
+    def save(self, commit=True):
+        user = super().save(commit=False)
+        user.email = self.cleaned_data['email']
+        if 'display_name' in self.cleaned_data and hasattr(user, 'display_name'):
+            user.display_name = self.cleaned_data['display_name']
+        if commit:
+            user.save()
+        return user
 
 
 class UploadFileForm(forms.ModelForm):
-    """Form for uploading books/files."""
-    
+    # (same as Option A - your upload form)
     class Meta:
         model = UploadedFile
         fields = ['title', 'description', 'file', 'year_published', 'cost', 'visibility']
@@ -56,19 +73,14 @@ class UploadFileForm(forms.ModelForm):
                 'class': 'form-control'
             }),
         }
-    
+
     def clean_file(self):
-        """Validate file extension and size."""
         file = self.cleaned_data.get('file')
         if file:
-            # Check file size (max 50MB)
             if file.size > 50 * 1024 * 1024:
                 raise forms.ValidationError("File size must not exceed 50MB.")
-            
-            # Check file extension
             allowed_ext = ['pdf', 'jpeg', 'jpg']
             ext = file.name.split('.')[-1].lower()
             if ext not in allowed_ext:
                 raise forms.ValidationError("Only PDF and JPEG files are allowed.")
-        
         return file

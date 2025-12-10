@@ -45,23 +45,20 @@
 						</div>
 					{% endif %}
 
-					<form method="post" class="form-horizontal">
+					<form method="post" action="{% url 'register' %}" class="form-horizontal">
 						{% csrf_token %}
 
-						<!-- Username Field -->
+						
+						<!-- Email Field -->
 						<div class="form-group">
-							<label class="col-form-label">Username <span class="text-danger">*</span></label>
+							<label class="col-form-label">Email <span class="text-danger">*</span></label>
 							<div>
-								{{ form.username }}
-								{% if form.username.errors %}
-									<div class="text-danger small mt-2">{{ form.username.errors }}</div>
-								{% endif %}
-								{% if form.username.help_text %}
-									<small class="form-text text-muted">{{ form.username.help_text|safe }}</small>
+								{{ form.email }}
+								{% if form.email.errors %}
+									<div class="text-danger small mt-2">{{ form.email.errors }}</div>
 								{% endif %}
 							</div>
 						</div>
-
 						<!-- Password Field -->
 						<div class="form-group">
 							<label class="col-form-label">Password <span class="text-danger">*</span></label>

@@ -1,0 +1,1 @@
+##cd 'c:\Users\Jaineel\Desktop\coding\Markytrics.ai\social_book'; $env:USE_SQLITE='1'; Write-Host "Environment variable set to: ##$env:USE_SQLITE"; & .\env\Scripts\Activate.ps1; python manage.py runserver
