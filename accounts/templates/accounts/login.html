@@ -1,117 +1,240 @@
 ﻿{% extends 'base/base.html' %}
-{% load static %}
+{% block title %}Login{% endblock %}
 
-{% block title %}Login - Social Book{% endblock %}
-
-{% block content %}
-<div class="login-header box-shadow">
-	<div class="container-fluid d-flex justify-content-between align-items-center">
-		<div class="brand-logo">
-			<a href="{% url 'login' %}">
-				<img src="{% static 'deskapp2-master/vendors/images/deskapp-logo.svg' %}" alt="Social Book">
-			</a>
-		</div>
-		<div class="login-menu">
-			<ul>
-				<li><a href="{% url 'register' %}">Register</a></li>
-			</ul>
-		</div>
-	</div>
-</div>
-
-<div class="login-wrap d-flex align-items-center flex-wrap justify-content-center">
-	<div class="container">
-		<div class="row align-items-center">
-			<div class="col-md-6 col-lg-7">
-				<img src="{% static 'deskapp2-master/vendors/images/login-page-img.png' %}" alt="Login">
-			</div>
-			<div class="col-md-6 col-lg-5">
-				<div class="login-box bg-white box-shadow border-radius-10">
-					<div class="login-title">
-						<h2 class="text-center text-primary">Login to Social Book</h2>
-					</div>
-
-					{% if form.non_field_errors %}
-						<div class="alert alert-danger" role="alert">
-							{% for error in form.non_field_errors %}
-								<p>{{ error }}</p>
-							{% endfor %}
-						</div>
-					{% endif %}
-
-					<form method="post">
-						{% csrf_token %}
-
-						<div class="input-group custom">
-							{{ form.username }}
-							<div class="input-group-append custom">
-								<span class="input-group-text"><i class="icon-copy dw dw-user1"></i></span>
-							</div>
-						</div>
-						{% if form.username.errors %}
-							<div class="text-danger small">{{ form.username.errors }}</div>
-						{% endif %}
-
-						<div class="input-group custom">
-							{{ form.password }}
-							<div class="input-group-append custom">
-								<span class="input-group-text"><i class="dw dw-padlock1"></i></span>
-							</div>
-						</div>
-						{% if form.password.errors %}
-							<div class="text-danger small">{{ form.password.errors }}</div>
-						{% endif %}
-
-						<div class="row pb-30">
-							<div class="col-6">
-								<div class="custom-control custom-checkbox">
-									<input type="checkbox" class="custom-control-input" id="customCheck1">
-									<label class="custom-control-label" for="customCheck1">Remember</label>
-								</div>
-							</div>
-							<div class="col-6">
-								<div class="forgot-password"><a href="#">Forgot Password?</a></div>
-							</div>
-						</div>
-
-						<div class="row">
-							<div class="col-sm-12">
-								<div class="input-group mb-0">
-									<button type="submit" class="btn btn-primary btn-lg btn-block">Sign In</button>
-								</div>
-								<div class="font-16 weight-600 pt-10 pb-10 text-center" data-color="#707373">OR</div>
-								<div class="input-group mb-0">
-									<a class="btn btn-outline-primary btn-lg btn-block" href="{% url 'register' %}">Register To Create Account</a>
-								</div>
-							</div>
-						</div>
-					</form>
-				</div>
-			</div>
-		</div>
-	</div>
-</div>
-
+{% block extra_css %}
 <style>
+	body {
+		background-color: #f5f5f5;
+	}
+	.login-container {
+		max-width: 400px;
+		margin: 80px auto;
+		padding: 30px;
+		background: #fff;
+		border-radius: 8px;
+		box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+	}
+	.login-container h2 {
+		margin-bottom: 20px;
+		font-weight: 600;		
+		text-align: center;
+	}
+	.form-group {
+		margin-bottom: 15px;
+	}
 	.form-control {
-		border: 1px solid #d9d9d9;
-		border-radius: 4px;
-		padding: 0.75rem 1rem;
-		font-size: 1rem;
+		width: 100%;
+		height: 45px;
+		font-size: 16px;
+		border-radius: 6px;
+		border: 1px solid #ccc;
+		padding: 10px;	
+		transition: border-color 0.3s;
+		box-sizing: border-box;
 	}
 	.form-control:focus {
-		border-color: #4680ff;
-		box-shadow: 0 0 0 0.2rem rgba(70, 128, 255, 0.25);
+		border-color: #007bff;
+		box-shadow: 0 0 5px rgba(0, 123, 255, 0.5);
+		outline: none;
 	}
-	.input-group.custom {
-		margin-bottom: 20px;
+	#signin-btn {
+		width: 100%;
+		height: 45px;
+		font-size: 16px;
+		border-radius: 6px;
+		background-color: #007bff;		
+		color: #fff;
+		border: none;
+		cursor: pointer;
+		transition: background-color 0.3s;
+		margin-top: 10px;
 	}
-	.input-group.custom .form-control {
-		padding-right: 0;
-		border-right: none;
+	#signin-btn:hover {
+		background-color: #0056b3;
 	}
-	.input-group.custom .input-group-append {
-		border-left: 1px solid #d9d9d9;
+	#signin-btn:disabled {
+		background-color: #cccccc;
+		cursor: not-allowed;
+	}
+	#error-msg {
+		color: #d32f2f;
+		background-color: #ffebee;
+		margin-bottom: 15px;	
+		padding: 10px;
+		border-radius: 4px;
+		display: none;
+		text-align: center;
+	}
+	.login-footer {
+		text-align: center;
+		margin-top: 15px;
+		font-size: 14px;
+	}
+	.login-footer a {
+		color: #007bff;
+		text-decoration: none;
+	}
+	.login-footer a:hover {
+		text-decoration: underline;
 	}
 </style>
+{% endblock %}
+
+{% block content %}
+<div class="login-container">
+	<h2>Sign In to Your Account</h2>
+	
+	<!-- Error message display -->
+	<div id="error-msg"></div>
+	
+	<!-- Login form -->
+	<form id="login-form" method="POST">
+		{% csrf_token %}
+		
+		<div class="form-group">
+			<label for="email">Email Address</label>
+			<input 
+				type="email" 
+				id="email" 
+				name="email" 
+				class="form-control" 
+				placeholder="Enter your email"
+				required
+			/>
+		</div>
+
+		<div class="form-group">
+			<label for="password">Password</label>
+			<input 
+				type="password" 
+				id="password" 
+				name="password" 
+				class="form-control" 
+				placeholder="Enter your password"
+				required
+			/>
+		</div>
+
+		<button type="submit" id="signin-btn" class="btn btn-primary">Sign In</button>
+	</form>
+
+	<div class="login-footer">
+		Don't have an account? <a href="{% url 'register' %}">Register here</a>
+	</div>
+</div>
+
+<script>
+document.getElementById('login-form').addEventListener('submit', loginUser);
+
+async function loginUser(event) {
+	event.preventDefault();
+	event.stopPropagation();
+
+	const signinBtn = document.getElementById('signin-btn');
+	const emailVal = document.getElementById('email').value.trim();
+	const passwordVal = document.getElementById('password').value;
+	const errEl = document.getElementById('error-msg');
+
+	// Clear error
+	errEl.style.display = 'none';
+	errEl.textContent = '';
+
+	// Validation
+	if (!emailVal || !passwordVal) {
+		errEl.textContent = 'Please enter both email and password.';
+		errEl.style.display = 'block';
+		return;
+	}
+
+	signinBtn.disabled = true;
+	signinBtn.textContent = 'Signing in...';
+
+	const body = {
+		username: emailVal,
+		email: emailVal,
+		password: passwordVal
+	};
+
+	try {
+		// ✅ STEP 1: TOKEN LOGIN via Djoser
+		const resp = await fetch('/api/auth/token/login/', {
+			method: 'POST',
+			headers: {
+				'Content-Type': 'application/json',
+				'Accept': 'application/json'
+			},
+			body: JSON.stringify(body)
+		});
+
+		console.log('[Step 1] POST /api/auth/token/login/ status:', resp.status);
+
+		let data = null;
+		try { 
+			data = await resp.json(); 
+		} catch (e) {
+			console.warn('Could not parse JSON:', e);
+		}
+
+		console.log('[Step 1] Response body:', data);
+
+		// Extract token from response (Djoser returns auth_token)
+		const token = data && (data.auth_token || data.token || data.access);
+
+		if (resp.ok && token) {
+			// ✅ STEP 2: SAVE TOKEN to localStorage
+			localStorage.setItem('token', token);
+			console.log('[Step 2] Saved token to localStorage:', token.substring(0, 10) + '...');
+
+			// ✅ STEP 3: CREATE DJANGO SESSION USING TOKEN
+			const sessionResp = await fetch('/accounts/token-session-login/', {
+				method: 'POST',
+				headers: {
+					'Content-Type': 'application/json'
+				},
+				body: JSON.stringify({ token: token })
+			});
+
+			console.log('[Step 3] POST /accounts/token-session-login/ status:', sessionResp.status);
+			const sessionData = await sessionResp.json().catch(() => ({}));
+			console.log('[Step 3] Session response:', sessionData);
+
+			if (sessionResp.ok) {
+				// ✅ STEP 4: REDIRECT TO DASHBOARD
+				console.log('[Step 4] Redirecting to dashboard...');
+				window.location.replace('/accounts/dashboard/');
+				return;
+			} else {
+				throw new Error('Session creation failed: ' + (sessionData.detail || 'Unknown error'));
+			}
+		}
+
+		// ❌ ERROR HANDLING
+		let msg = 'Login failed — check your credentials';
+		if (data) {
+			if (data.detail) msg = data.detail;
+			else if (data.non_field_errors) msg = data.non_field_errors.join(' ');
+			else {
+				const vals = Object.values(data).flat().filter(v => typeof v === 'string');
+				if (vals.length) msg = vals.join(' ');
+			}
+		} else if (resp.status === 401) {
+			msg = 'Unauthorized — bad email or password';
+		} else if (resp.status === 405) {
+			msg = 'Method not allowed (POST endpoint issue)';
+		}
+
+		errEl.textContent = msg;
+		errEl.style.display = 'block';
+		console.warn('[Error] Login failed:', resp.status, data);
+
+	} catch (err) {
+		console.error('[Exception] Login error:', err);
+		errEl.textContent = 'Network or server error — check console for details.';
+		errEl.style.display = 'block';
+	} finally {
+		signinBtn.disabled = false;
+		signinBtn.textContent = 'Sign In';
+	}
+}
+</script>
 {% endblock %}

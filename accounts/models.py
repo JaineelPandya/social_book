@@ -111,3 +111,32 @@ class UploadedFile(models.Model):
                 return f"{size:.2f} {unit}"
             size /= 1024
         return f"{size:.2f} TB"
+
+class EnrolledData(models.Model):
+    """Model to store enrollment data for uploaded files.
+    
+    Stores user's enrollment information (name, price, etc.) in JSON payload.
+    One-to-one relationship with UploadedFile.
+    """
+    user = models.ForeignKey(
+        CustomUser,
+        on_delete=models.CASCADE,
+        related_name='enrollments'
+    )
+    file = models.OneToOneField(
+        UploadedFile,
+        on_delete=models.CASCADE,
+        related_name='enrolled_data'
+    )
+    payload = models.JSONField(default=dict, blank=True)  # stores name, price, etc.
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        verbose_name = "Enrolled Data"
+        verbose_name_plural = "Enrolled Data"
+        ordering = ['-created_at']
+
+    def __str__(self):
+        return f"Enrollment for {self.file.title} by {self.user.email}"
+

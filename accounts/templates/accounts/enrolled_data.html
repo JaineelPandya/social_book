@@ -1,0 +1,42 @@
+{% extends "base/base.html" %}
+{% block title %}Enrolled Data{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+
+  <h2>✅ Enrolled File Data</h2>
+
+  <div class="card mt-3 p-4">
+
+    <h4>{{ file.title }}</h4>
+
+    <p>{{ file.description }}</p>
+
+    <p><b>Year:</b> {{ file.year_published }}</p>
+    <p><b>Cost:</b> ₹{{ file.cost }}</p>
+    <p><b>Visibility:</b> {{ file.visibility }}</p>
+
+    <hr>
+
+    {% if created %}
+      <div class="alert alert-success">
+        ✅ You have been successfully enrolled for this file.
+      </div>
+    {% else %}
+      <div class="alert alert-info">
+        ℹ️ You are already enrolled for this file.
+      </div>
+    {% endif %}
+
+    <a href="{{ file.file.url }}" class="btn btn-primary mt-3" target="_blank">
+      📄 Open File
+    </a>
+
+    <a href="/accounts/upload-books/" class="btn btn-secondary mt-3">
+      🔙 Back to My Files
+    </a>
+
+  </div>
+
+</div>
+{% endblock %}

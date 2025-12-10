@@ -5,21 +5,19 @@
 
 {% block extra_css %}
 <style>
-/* Simple full-screen hero with subtle animation */
 .hero {
   display:flex;
   align-items:center;
   justify-content:center;
   height:80vh;
-  background: linear-gradient(120deg,#0f1724 0%, #1f2849 50%, #2b3b7a 100%);
+  background: linear-gradient(120deg,#0f1724 0%, #8f2727ff 50%, #6379cbff 100%);
   color: #fff;
   text-align:center;
   overflow:hidden;
 }
 .hero h1{font-size:3rem;margin:0 0 0.5rem;animation:floatIn 900ms ease-out;}
 .hero p{font-size:1.1rem;opacity:0.95;animation:fadeIn 1200ms ease-out 200ms both}
-.cta {
-  margin-top:1.25rem;display:inline-flex;gap:.75rem;animation:floatIn 1100ms ease-out 300ms both}
+.cta {margin-top:1.25rem;display:inline-flex;gap:.75rem;animation:floatIn 1100ms ease-out 300ms both}
 .btn-cta{background:#ffd166;color:#09203f;padding:.65rem 1rem;border-radius:999px;border:0;font-weight:700;box-shadow:0 6px 18px rgba(15,20,36,0.35);transform:translateY(0);transition:transform .18s}
 .btn-cta.secondary{background:transparent;border:1px solid rgba(255,255,255,0.2);color:#fff}
 .btn-cta:hover{transform:translateY(-4px)}
@@ -38,17 +36,17 @@
 {% block content %}
 <div class="hero">
   <div class="hero-decor" aria-hidden="true"></div>
+
   <div>
     <h1>Welcome to Social Book</h1>
     <p>Your community for sharing, discovering, and showcasing books and authors — beautifully.</p>
-    <div class="cta">
-      {% if user.is_authenticated %}
-        <a class="btn-cta" href="{% url 'dashboard' %}">Go to Dashboard</a>
-      {% else %}
-        <a class="btn-cta" href="{% url 'login' %}">Sign in</a>
-        <a class="btn-cta secondary" href="{% url 'register' %}">Create account</a>
-      {% endif %}
+
+    <!-- ✅ Dynamic CTA Buttons -->
+    <div class="cta" id="cta-buttons">
+      <a class="btn-cta" href="/login/">Sign in</a>
+      <a class="btn-cta secondary" href="/register/">Create account</a>
     </div>
+
   </div>
 </div>
 
@@ -68,4 +66,22 @@
     </div>
   </div>
 </div>
+
+<!-- ✅ SINGLE TOKEN CHECK SCRIPT -->
+<script>
+  try {
+    const token = localStorage.getItem("token");
+    const cta = document.getElementById("cta-buttons");
+
+    if (token) {
+      // ✅ Correct dashboard path
+      cta.innerHTML = `
+        <a class="btn-cta" href="/accounts/dashboard/">Go to Dashboard</a>
+      `;
+    }
+  } catch (e) {
+    console.warn("localStorage unavailable", e);
+  }
+</script>
+
 {% endblock %}

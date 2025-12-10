@@ -1,0 +1,10 @@
+{% extends 'base/base.html' %}
+{% block content %}
+<h2>Create Enrolled Data</h2>
+<p>Book: {{ file.title }}</p>
+
+<form method="post">
+    {% csrf_token %}
+    <button class="btn btn-primary">Create Data</button>
+</form>
+{% endblock %}

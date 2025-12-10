@@ -55,6 +55,8 @@ MIDDLEWARE = [
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
+    # Require login for all views by default; exemptions are defined below
+    'accounts.middleware.LoginRequiredMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
@@ -147,13 +149,39 @@ MEDIA_ROOT = BASE_DIR / 'media'
 LOGIN_REDIRECT_URL = '/accounts/dashboard/'
 LOGOUT_REDIRECT_URL = '/accounts/login/'
 AUTH_USER_MODEL = 'accounts.CustomUser'
+LOGIN_URL = '/accounts/login/'
+
+# Session configuration: 5 minutes (300 seconds) session timeout
+SESSION_COOKIE_AGE = int(os.environ.get('SESSION_COOKIE_AGE', 300))
+# Refresh session expiry on each request so active users remain logged-in
+SESSION_SAVE_EVERY_REQUEST = True
+
+# URLs to exempt from login requirement (strings should start with '/')
+LOGIN_EXEMPT_URLS = [
+    '/accounts/',
+    '/accounts/login/',
+    '/accounts/register/',
+    '/api/auth/',
+    '/static/',
+    '/media/',
+    '/admin/',
+]
 
 REST_FRAMEWORK = {
+    # Only JSON responses (removes browsable API UI)
+    "DEFAULT_RENDERER_CLASSES": [
+        "rest_framework.renderers.JSONRenderer",
+    ],
+
+    # Token authentication by default (views can override if needed)
     "DEFAULT_AUTHENTICATION_CLASSES": [
         "rest_framework.authentication.TokenAuthentication",
     ],
+
+    # Keep default permission permissive so login endpoints remain accessible.
+    # Enforce IsAuthenticated on views that require it (recommended).
     "DEFAULT_PERMISSION_CLASSES": [
-        "rest_framework.permissions.IsAuthenticated",
+        "rest_framework.permissions.AllowAny",
     ],
 }
 

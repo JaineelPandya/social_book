@@ -82,6 +82,11 @@
 {% endblock %}
 
 {% block content %}
+<script>
+if (!localStorage.getItem("token")) {
+  window.location.href = "/";
+}
+</script>
 <div class="page-wrapper">
 	<!-- Header -->
 	<div class="header">
@@ -102,7 +107,7 @@
 								<a class="dropdown-item" href="{% url 'profile' %}">Profile</a>
 								<a class="dropdown-item" href="#">Settings</a>
 								<div class="dropdown-divider"></div>
-								<a class="dropdown-item" href="{% url 'logout' %}">Logout</a>
+								<button class="dropdown-item" onclick="logoutUser()">Logout</button>
 							</div>
 						</div>
 					</div>
@@ -132,7 +137,7 @@
 								<p>Quick snapshot of your activity and suggestions. Use the tabs to explore features.</p>
 							</div>
 							<div class="tab-panel" id="uploads" style="display:none;">
-								<p><a href="{% url 'my_books' %}">View My Books</a> — upload and manage your files.</p>
+								<p><a href="/accounts/upload-books/">View My Books</a> — upload and manage your files.</p>
 							</div>
 							<div class="tab-panel" id="authors" style="display:none;">
 								<p><a href="{% url 'authors:list' %}">Browse Authors</a> — discover creators and sellers.</p>
@@ -359,4 +364,17 @@
 		}
 	}
 </style>
+<script>
+function logoutUser() {
+  fetch("/api/auth/token/logout/", {
+    method: "POST",
+    headers: {
+      "Authorization": "Token " + localStorage.getItem("token")
+    }
+  }).finally(() => {
+    localStorage.removeItem("token");   // ✅ Destroy token locally
+    window.location.href = "/";         // ✅ Redirect to landing page (home.html)
+  });
+}
+</script>
 {% endblock %}

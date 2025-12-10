@@ -3,23 +3,26 @@ from django.contrib.auth import views as auth_views
 from . import views
 
 urlpatterns = [
+    # Public routes (no login required)
     path('', views.home, name='home'),
     path('register/', views.register, name='register'),
     path('login/', auth_views.LoginView.as_view(template_name='accounts/login.html'), name='login'),
     path('logout/', auth_views.LogoutView.as_view(), name='logout'),
+    
+    # Token-based authentication (creates Django session)
+    path('token-session-login/', views.token_session_login, name='token_session_login'),
+    
+    # Protected routes (require login via @login_required)
     path('dashboard/', views.dashboard, name='dashboard'),
     path('profile/', views.profile, name='profile'),
-    
-    # Upload books
     path('upload-books/', views.upload_books, name='upload_books'),
     path('my-books/', views.my_books, name='my_books'),
-    path('send-test-email/', views.send_test_email, name='send_test_email'),
     path('file/<int:file_id>/', views.file_detail, name='file_detail'),
     path('file/<int:file_id>/delete/', views.delete_file, name='delete_file'),
-    
-    # PostgreSQL Dashboard (SQLAlchemy)
+    path('enroll-data/<int:file_id>/', views.enroll_data, name='enroll_data'),
+    path('send-test-email/', views.send_test_email, name='send_test_email'),
     path('postgres-dashboard/', views.postgres_dashboard, name='postgres_dashboard'),
     
-    # Authors listing (authors app defines `app_name = "authors"`)
+    # Authors app
     path('authors/', include('authors.urls', namespace='authors')),
 ]

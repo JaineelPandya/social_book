@@ -333,13 +333,17 @@
                             
                             <!-- Actions -->
                             <div class="file-card-actions">
-                                <a href="{% url 'file_detail' file.id %}" class="btn btn-sm btn-info" title="View Details">
-                                    <i class="dw dw-eye"></i> View
+                                <a href="{% url 'enroll_data' file.id %}" 
+                                   class="btn btn-sm btn-info w-100"
+                                   title="View / Create enrollment data">
+                                    <i class="dw dw-eye"></i> Enroll
                                 </a>
-                                <form method="post" action="{% url 'delete_file' file.id %}" style="flex: 1;">
+
+                                <form method="post" action="{% url 'delete_file' file.id %}" style="flex:1;">
                                     {% csrf_token %}
-                                    <button type="submit" class="btn btn-sm btn-danger w-100" 
-                                            onclick="return confirm('Are you sure?')" title="Delete">
+                                    <button type="submit" class="btn btn-sm btn-danger w-100"
+                                            onclick="return confirm('Are you sure?')"
+                                            title="Delete this file">
                                         <i class="dw dw-delete"></i> Delete
                                     </button>
                                 </form>
