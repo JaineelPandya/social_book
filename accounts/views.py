@@ -13,7 +13,8 @@ from .models import UploadedFile
 
 
 def home(request):
-    return HttpResponse("Welcome to Social Book Home Page")
+    # Render a welcoming landing page with animations
+    return render(request, 'accounts/home.html')
 
 
 def register(request):
