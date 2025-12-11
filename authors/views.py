@@ -1,5 +1,9 @@
 # authors/views.py
-from django.views.generic import ListView
+from django.views.generic import ListView, DetailView
+from django.shortcuts import get_object_or_404
+from django.contrib.auth import get_user_model
+
+User = get_user_model()
 
 
 class AuthorsAndSellersListView(ListView):
@@ -30,4 +34,29 @@ class AuthorsAndSellersListView(ListView):
     def get_context_data(self, **kwargs):
         ctx = super().get_context_data(**kwargs)
         ctx['filter'] = getattr(self, 'filterset', None)
+        return ctx
+
+
+class AuthorDetailView(DetailView):
+    """Detail view for a single author showing their public books."""
+    model = None
+    template_name = "authors/author_detail.html"
+    context_object_name = "author"
+    pk_url_kwarg = "user_id"
+    
+    def get_queryset(self):
+        """Get user queryset."""
+        return User.objects.filter(public_visibility=True, is_active=True)
+    
+    def get_context_data(self, **kwargs):
+        ctx = super().get_context_data(**kwargs)
+        # Get author's public books
+        from accounts.models import UploadedFile
+        books = UploadedFile.objects.filter(
+            user=self.object,
+            visibility='public',
+            is_active=True
+        ).order_by('-uploaded_at')
+        ctx['books'] = books
+        ctx['books_count'] = books.count()
         return ctx

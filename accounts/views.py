@@ -126,8 +126,13 @@ def token_session_login(request):
 @login_required(login_url='login')
 def dashboard(request):
     """User dashboard - shows overview and stats."""
+    total_users = CustomUser.objects.filter(is_active=True).count()
+    total_books = UploadedFile.objects.filter(is_active=True).count()
+    
     context = {
         'user': request.user,
+        'total_users': total_users,
+        'total_books': total_books,
         'total_files': request.user.uploaded_files.filter(is_active=True).count(),
         'total_enrollments': EnrolledData.objects.filter(user=request.user).count(),
     }
@@ -219,16 +224,13 @@ def file_detail(request, file_id):
 @login_required(login_url='login')
 def my_books(request):
     """
-    'My Books' dashboard wrapper.
+    'My Books' dashboard showing user's uploaded files.
     
-    Shows user's uploaded files if they exist.
-    Redirects to upload page if no files.
+    Shows all user's uploaded books with PDF download links.
     """
-    user_files = UploadedFile.objects.filter(user=request.user, is_active=True)
-    if user_files.exists():
-        context = {'uploaded_files': user_files}
-        return render(request, 'accounts/my_books.html', context)
-    return redirect('upload_books')
+    user_files = UploadedFile.objects.filter(user=request.user, is_active=True).order_by('-uploaded_at')
+    context = {'uploaded_files': user_files}
+    return render(request, 'accounts/my_books.html', context)
 
 
 @login_required(login_url='login')
