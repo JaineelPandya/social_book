@@ -7,7 +7,7 @@ urlpatterns = [
     path('', views.home, name='home'),
     path('register/', views.register, name='register'),
     path('welcome/', views.welcome, name='welcome'),
-    path('login/', auth_views.LoginView.as_view(template_name='accounts/login.html'), name='login'),
+    path('login/', views.login_page, name='login'),
     path('logout/', auth_views.LogoutView.as_view(), name='logout'),
     
     # Token-based authentication (creates Django session)

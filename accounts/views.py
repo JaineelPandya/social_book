@@ -56,6 +56,11 @@ def welcome(request):
     return render(request, 'accounts/welcome.html')
 
 
+def login_page(request):
+    """Login page view."""
+    return render(request, 'accounts/login.html')
+
+
 class CustomLoginView(LoginView):
     """Django's built-in login view for form-based authentication."""
     template_name = 'accounts/login.html'
@@ -141,8 +146,19 @@ def dashboard(request):
 
 @login_required(login_url='login')
 def profile(request):
-    """User profile view."""
-    return render(request, 'accounts/profile.html')
+    """User profile view with public/private visibility toggle."""
+    from .forms import ProfileUpdateForm
+    
+    if request.method == 'POST':
+        form = ProfileUpdateForm(request.POST, instance=request.user)
+        if form.is_valid():
+            form.save()
+            messages.success(request, 'Profile updated successfully!')
+            return redirect('profile')
+    else:
+        form = ProfileUpdateForm(instance=request.user)
+    
+    return render(request, 'accounts/profile.html', {'form': form})
 
 
 @login_required(login_url='login')

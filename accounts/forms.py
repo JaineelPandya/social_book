@@ -84,3 +84,22 @@ class UploadFileForm(forms.ModelForm):
             if ext not in allowed_ext:
                 raise forms.ValidationError("Only PDF and JPEG files are allowed.")
         return file
+
+
+class ProfileUpdateForm(forms.ModelForm):
+    """Form for updating user profile settings including visibility."""
+    
+    class Meta:
+        model = CustomUser
+        fields = ['first_name', 'last_name', 'bio', 'public_visibility', 'birth_year', 'address']
+        widgets = {
+            'bio': forms.Textarea(attrs={'rows': 4, 'class': 'form-control'}),
+            'first_name': forms.TextInput(attrs={'class': 'form-control'}),
+            'last_name': forms.TextInput(attrs={'class': 'form-control'}),
+            'birth_year': forms.NumberInput(attrs={'class': 'form-control'}),
+            'address': forms.Textarea(attrs={'rows': 3, 'class': 'form-control'}),
+            'public_visibility': forms.CheckboxInput(attrs={'class': 'custom-control-input'}),
+        }
+        help_texts = {
+            'public_visibility': 'If enabled, your profile and public books will be visible to all users in the Authors section.',
+        }

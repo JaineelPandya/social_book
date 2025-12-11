@@ -14,6 +14,38 @@
 		padding: 1rem 0;
 		box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05)
 	}
+
+	.card {
+		border: 1px solid #e0e0e0;
+		border-radius: 8px;
+		box-shadow: 0 2px 4px rgba(0, 0, 0, 0.08);
+		margin-bottom: 1.5rem
+	}
+
+	.card-header {
+		background-color: #f5f6fb;
+		border-bottom: 1px solid #e0e0e0;
+		padding: 1rem;
+		font-weight: 600
+	}
+
+	.visibility-toggle {
+		background: #f8f9fa;
+		padding: 1.5rem;
+		border-radius: 8px;
+		border: 2px solid #e0e0e0;
+		margin-bottom: 1.5rem
+	}
+
+	.visibility-toggle.public {
+		border-color: #3bba9f;
+		background: #e8f8f5
+	}
+
+	.visibility-toggle.private {
+		border-color: #ff5370;
+		background: #fff0f3
+	}
 </style>
 {% endblock %}
 
@@ -32,9 +64,17 @@
 </div>
 
 <div class="page-wrapper" style="background:#f5f6fb;min-height:100vh">
-
 	<!-- Main Content -->
 	<div class="container-fluid pd-20 pd-sm-40">
+		{% if messages %}
+		{% for message in messages %}
+		<div class="alert alert-{{ message.tags }} alert-dismissible fade show">
+			{{ message }}
+			<button type="button" class="close" data-dismiss="alert">&times;</button>
+		</div>
+		{% endfor %}
+		{% endif %}
+
 		<div class="row">
 			<div class="col-md-8">
 				<div class="card">
@@ -42,68 +82,112 @@
 						<h5 class="mb-0">Profile Information</h5>
 					</div>
 					<div class="card-body pd-20">
-						<div class="form-group row">
-							<label class="col-sm-3 col-form-label">Username</label>
-							<div class="col-sm-9">
-								<input type="text" class="form-control" value="{{ user.username }}" disabled>
+						<form method="POST">
+							{% csrf_token %}
+
+							<div class="form-group row">
+								<label class="col-sm-3 col-form-label">Email</label>
+								<div class="col-sm-9">
+									<input type="text" class="form-control" value="{{ user.email }}" disabled>
+									<small class="text-muted">Email cannot be changed</small>
+								</div>
 							</div>
-						</div>
-						<div class="form-group row">
-							<label class="col-sm-3 col-form-label">Email</label>
-							<div class="col-sm-9">
-								<input type="email" class="form-control" value="{{ user.email }}" disabled>
+
+							<div class="form-group row">
+								<label class="col-sm-3 col-form-label">First Name</label>
+								<div class="col-sm-9">
+									{{ form.first_name }}
+								</div>
 							</div>
-						</div>
-						<div class="form-group row">
-							<label class="col-sm-3 col-form-label">First Name</label>
-							<div class="col-sm-9">
-								<input type="text" class="form-control" value="{{ user.first_name }}" disabled>
+
+							<div class="form-group row">
+								<label class="col-sm-3 col-form-label">Last Name</label>
+								<div class="col-sm-9">
+									{{ form.last_name }}
+								</div>
 							</div>
-						</div>
-						<div class="form-group row">
-							<label class="col-sm-3 col-form-label">Last Name</label>
-							<div class="col-sm-9">
-								<input type="text" class="form-control" value="{{ user.last_name }}" disabled>
+
+							<div class="form-group row">
+								<label class="col-sm-3 col-form-label">Bio</label>
+								<div class="col-sm-9">
+									{{ form.bio }}
+								</div>
 							</div>
-						</div>
-						<div class="form-group row">
-							<label class="col-sm-3 col-form-label">Member Since</label>
-							<div class="col-sm-9">
-								<input type="text" class="form-control" value="{{ user.date_joined|date:'M d, Y' }}"
-									disabled>
+
+							<div class="form-group row">
+								<label class="col-sm-3 col-form-label">Birth Year</label>
+								<div class="col-sm-9">
+									{{ form.birth_year }}
+								</div>
 							</div>
-						</div>
-						<div class="row">
-							<div class="col-sm-12">
-								<button class="btn btn-primary">Edit Profile</button>
-								<button class="btn btn-secondary">Change Password</button>
+
+							<div class="form-group row">
+								<label class="col-sm-3 col-form-label">Address</label>
+								<div class="col-sm-9">
+									{{ form.address }}
+								</div>
 							</div>
-						</div>
+
+							<div class="form-group row">
+								<label class="col-sm-3 col-form-label">Member Since</label>
+								<div class="col-sm-9">
+									<input type="text" class="form-control" value="{{ user.date_joined|date:'M d, Y' }}"
+										disabled>
+								</div>
+							</div>
+
+							<div class="row">
+								<div class="col-sm-12">
+									<button type="submit" class="btn btn-primary">Save Changes</button>
+								</div>
+							</div>
+						</form>
 					</div>
 				</div>
 			</div>
 
 			<div class="col-md-4">
+				<!-- Account Visibility Card -->
 				<div class="card">
 					<div class="card-header">
-						<h5 class="mb-0">Account Stats</h5>
+						<h5 class="mb-0">Account Visibility</h5>
 					</div>
 					<div class="card-body pd-20">
+						<form method="POST">
+							{% csrf_token %}
+							<div
+								class="visibility-toggle {% if user.public_visibility %}public{% else %}private{% endif %}">
+								<div class="custom-control custom-switch">
+									{{ form.public_visibility }}
+									<label class="custom-control-label" for="{{ form.public_visibility.id_for_label }}"
+										style="font-weight:600;font-size:1.1rem">
+										{% if user.public_visibility %}
+										<i class="icon-copy dw dw-worldwide" style="color:#3bba9f"></i> Public Account
+										{% else %}
+										<i class="icon-copy dw dw-lock" style="color:#ff5370"></i> Private Account
+										{% endif %}
+									</label>
+								</div>
+								<p class="text-muted mt-2 mb-0" style="font-size:0.9rem">
+									{{ form.public_visibility.help_text }}
+								</p>
+							</div>
+							<button type="submit" class="btn btn-primary btn-block">Save Visibility Setting</button>
+						</form>
+
+						<hr>
+
 						<div class="stat-item mb-20">
-							<h6>Posts</h6>
-							<span class="stat-number">24</span>
+							<h6>Uploaded Books</h6>
+							<span class="stat-number">{{ user.uploaded_files.count }}</span>
 						</div>
 						<div class="stat-item mb-20">
 							<h6>Followers</h6>
-							<span class="stat-number">156</span>
-						</div>
-						<div class="stat-item mb-20">
-							<h6>Following</h6>
-							<span class="stat-number">89</span>
+							<span class="stat-number">{{ user.followers_count }}</span>
 						</div>
 						<div class="stat-item">
-							<h6>Likes</h6>
-							<span class="stat-number">342</span>
+							<h6>Following</h6>
+							<span class="stat-number">{{ user.following_count }}</span>
 						</div>
 					</div>
 				</div>
@@ -113,8 +197,7 @@
 						<h5 class="mb-0">Account Actions</h5>
 					</div>
 					<div class="card-body pd-20">
-						<button class="btn btn-danger btn-block mb-10">Delete Account</button>
-						<button class="btn btn-warning btn-block">Export Data</button>
+						<a href="{% url 'logout' %}" class="btn btn-warning btn-block mb-10">Logout</a>
 					</div>
 				</div>
 			</div>
@@ -123,20 +206,6 @@
 </div>
 
 <style>
-	.card {
-		border: 1px solid #e0e0e0;
-		border-radius: 8px;
-		box-shadow: 0 2px 4px rgba(0, 0, 0, 0.08);
-		margin-bottom: 1.5rem;
-	}
-
-	.card-header {
-		background-color: #f5f6fb;
-		border-bottom: 1px solid #e0e0e0;
-		padding: 1rem;
-		font-weight: 600;
-	}
-
 	.form-group {
 		margin-bottom: 1.5rem;
 	}
@@ -158,10 +227,9 @@
 		color: #4680ff;
 	}
 
-	.welcome-message {
-		font-size: 2rem;
-		font-weight: 700;
-		color: #1f2849;
+	.custom-control-input:checked~.custom-control-label::before {
+		background-color: #3bba9f;
+		border-color: #3bba9f;
 	}
 </style>
 {% endblock %}

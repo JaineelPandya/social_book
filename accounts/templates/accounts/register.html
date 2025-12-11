@@ -4,7 +4,7 @@
 {% block title %}Register - Social Book{% endblock %}
 
 {% block extra_css %}
-	<link rel="stylesheet" type="text/css" href="{% static 'deskapp2-master/src/plugins/jquery-steps/jquery.steps.css' %}">
+<link rel="stylesheet" type="text/css" href="{% static 'deskapp2-master/src/plugins/jquery-steps/jquery.steps.css' %}">
 {% endblock %}
 
 {% block content %}
@@ -17,7 +17,7 @@
 		</div>
 		<div class="login-menu">
 			<ul>
-				<li><a href="{% url 'login' %}">Login</a></li>
+				<li><a href="/accounts/login/">Login</a></li>
 			</ul>
 		</div>
 	</div>
@@ -37,25 +37,25 @@
 					</div>
 
 					{% if form.non_field_errors %}
-						<div class="alert alert-danger" role="alert">
-							<strong>Error!</strong>
-							{% for error in form.non_field_errors %}
-								<p>{{ error }}</p>
-							{% endfor %}
-						</div>
+					<div class="alert alert-danger" role="alert">
+						<strong>Error!</strong>
+						{% for error in form.non_field_errors %}
+						<p>{{ error }}</p>
+						{% endfor %}
+					</div>
 					{% endif %}
 
 					<form method="post" action="{% url 'register' %}" class="form-horizontal">
 						{% csrf_token %}
 
-						
+
 						<!-- Email Field -->
 						<div class="form-group">
 							<label class="col-form-label">Email <span class="text-danger">*</span></label>
 							<div>
 								{{ form.email }}
 								{% if form.email.errors %}
-									<div class="text-danger small mt-2">{{ form.email.errors }}</div>
+								<div class="text-danger small mt-2">{{ form.email.errors }}</div>
 								{% endif %}
 							</div>
 						</div>
@@ -65,10 +65,11 @@
 							<div>
 								{{ form.password1 }}
 								{% if form.password1.errors %}
-									<div class="text-danger small mt-2">{{ form.password1.errors }}</div>
+								<div class="text-danger small mt-2">{{ form.password1.errors }}</div>
 								{% endif %}
 								{% if form.password1.help_text %}
-									<small class="form-text text-muted d-block mt-2">{{ form.password1.help_text|safe }}</small>
+								<small class="form-text text-muted d-block mt-2">{{ form.password1.help_text|safe
+									}}</small>
 								{% endif %}
 							</div>
 						</div>
@@ -79,10 +80,10 @@
 							<div>
 								{{ form.password2 }}
 								{% if form.password2.errors %}
-									<div class="text-danger small mt-2">{{ form.password2.errors }}</div>
+								<div class="text-danger small mt-2">{{ form.password2.errors }}</div>
 								{% endif %}
 								{% if form.password2.help_text %}
-									<small class="form-text text-muted">{{ form.password2.help_text|safe }}</small>
+								<small class="form-text text-muted">{{ form.password2.help_text|safe }}</small>
 								{% endif %}
 							</div>
 						</div>
@@ -104,7 +105,8 @@
 
 						<!-- Login Link -->
 						<div class="text-center">
-							<p>Already have an account? <a href="{% url 'login' %}" class="text-primary">Sign in here</a></p>
+							<p>Already have an account? <a href="/accounts/login/" class="text-primary">Sign in here</a>
+							</p>
 						</div>
 					</form>
 				</div>
@@ -114,30 +116,38 @@
 </div>
 
 <style>
-	.form-control, .form-control-lg {
+	.form-control,
+	.form-control-lg {
 		border: 1px solid #d9d9d9;
 		border-radius: 4px;
 		padding: 0.75rem 1rem;
 		font-size: 1rem;
 	}
-	.form-control:focus, .form-control-lg:focus {
+
+	.form-control:focus,
+	.form-control-lg:focus {
 		border-color: #4680ff;
 		box-shadow: 0 0 0 0.2rem rgba(70, 128, 255, 0.25);
 	}
+
 	.form-group {
 		margin-bottom: 1.5rem;
 	}
+
 	.form-group label {
 		font-weight: 500;
 		color: #333;
 		margin-bottom: 0.5rem;
 	}
+
 	.text-danger {
 		color: #dc3545;
 	}
+
 	.form-text {
 		display: block;
 	}
+
 	ul {
 		margin-left: 1.5rem;
 		font-size: 0.875rem;
