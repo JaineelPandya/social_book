@@ -8,7 +8,8 @@ urlpatterns = [
     path('register/', views.register, name='register'),
     path('welcome/', views.welcome, name='welcome'),
     path('login/', views.login_page, name='login'),
-    path('logout/', auth_views.LogoutView.as_view(), name='logout'),
+    path('logout/', views.logout_view, name='logout'),
+    path('activate/<uidb64>/<token>/', views.activate_account, name='activate'),
     
     # Token-based authentication (creates Django session)
     path('token-session-login/', views.token_session_login, name='token_session_login'),

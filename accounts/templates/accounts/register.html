@@ -1,133 +1,221 @@
 ﻿{% extends 'base/base.html' %}
 {% load static %}
 
-{% block title %}Register - Social Book{% endblock %}
+{% block title %}Create Account - Social Book{% endblock %}
 
 {% block extra_css %}
-<link rel="stylesheet" type="text/css" href="{% static 'deskapp2-master/src/plugins/jquery-steps/jquery.steps.css' %}">
-{% endblock %}
-
-{% block content %}
-<div class="login-header box-shadow">
-	<div class="container-fluid d-flex justify-content-between align-items-center">
-		<div class="brand-logo">
-			<a href="{% url 'register' %}">
-				<img src="{% static 'deskapp2-master/vendors/images/deskapp-logo.svg' %}" alt="Social Book">
-			</a>
-		</div>
-		<div class="login-menu">
-			<ul>
-				<li><a href="/accounts/login/">Login</a></li>
-			</ul>
-		</div>
-	</div>
-</div>
-
-<div class="register-page-wrap d-flex align-items-center flex-wrap justify-content-center">
-	<div class="container">
-		<div class="row align-items-center">
-			<div class="col-md-6 col-lg-7">
-				<img src="{% static 'deskapp2-master/vendors/images/register-page-img.png' %}" alt="Register">
-			</div>
-			<div class="col-md-6 col-lg-5">
-				<div class="register-box bg-white box-shadow border-radius-10">
-					<div class="register-title">
-						<h2 class="text-center text-primary">Create Your Account</h2>
-						<p class="text-center text-muted">Join Social Book today</p>
-					</div>
-
-					{% if form.non_field_errors %}
-					<div class="alert alert-danger" role="alert">
-						<strong>Error!</strong>
-						{% for error in form.non_field_errors %}
-						<p>{{ error }}</p>
-						{% endfor %}
-					</div>
-					{% endif %}
-
-					<form method="post" action="{% url 'register' %}" class="form-horizontal">
-						{% csrf_token %}
-
-
-						<!-- Email Field -->
-						<div class="form-group">
-							<label class="col-form-label">Email <span class="text-danger">*</span></label>
-							<div>
-								{{ form.email }}
-								{% if form.email.errors %}
-								<div class="text-danger small mt-2">{{ form.email.errors }}</div>
-								{% endif %}
-							</div>
-						</div>
-						<!-- Password Field -->
-						<div class="form-group">
-							<label class="col-form-label">Password <span class="text-danger">*</span></label>
-							<div>
-								{{ form.password1 }}
-								{% if form.password1.errors %}
-								<div class="text-danger small mt-2">{{ form.password1.errors }}</div>
-								{% endif %}
-								{% if form.password1.help_text %}
-								<small class="form-text text-muted d-block mt-2">{{ form.password1.help_text|safe
-									}}</small>
-								{% endif %}
-							</div>
-						</div>
-
-						<!-- Confirm Password Field -->
-						<div class="form-group">
-							<label class="col-form-label">Confirm Password <span class="text-danger">*</span></label>
-							<div>
-								{{ form.password2 }}
-								{% if form.password2.errors %}
-								<div class="text-danger small mt-2">{{ form.password2.errors }}</div>
-								{% endif %}
-								{% if form.password2.help_text %}
-								<small class="form-text text-muted">{{ form.password2.help_text|safe }}</small>
-								{% endif %}
-							</div>
-						</div>
-
-						<!-- Agreement Checkbox -->
-						<div class="form-group">
-							<div class="custom-control custom-checkbox">
-								<input type="checkbox" class="custom-control-input" id="agreeTerms" required>
-								<label class="custom-control-label" for="agreeTerms">
-									I agree to the terms and conditions
-								</label>
-							</div>
-						</div>
-
-						<!-- Submit Button -->
-						<div class="form-group">
-							<button type="submit" class="btn btn-primary btn-lg btn-block">Create Account</button>
-						</div>
-
-						<!-- Login Link -->
-						<div class="text-center">
-							<p>Already have an account? <a href="/accounts/login/" class="text-primary">Sign in here</a>
-							</p>
-						</div>
-					</form>
-				</div>
-			</div>
-		</div>
-	</div>
-</div>
-
 <style>
-	.form-control,
-	.form-control-lg {
-		border: 1px solid #d9d9d9;
-		border-radius: 4px;
-		padding: 0.75rem 1rem;
-		font-size: 1rem;
+	* {
+		margin: 0;
+		padding: 0;
+		box-sizing: border-box;
 	}
 
-	.form-control:focus,
-	.form-control-lg:focus {
-		border-color: #4680ff;
-		box-shadow: 0 0 0 0.2rem rgba(70, 128, 255, 0.25);
+	body {
+		overflow-x: hidden;
+	}
+
+	.auth-container {
+		position: relative;
+		min-height: 100vh;
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		background: linear-gradient(135deg, #667eea 0%, #764ba2 25%, #f093fb 50%, #4facfe 75%, #00f2fe 100%);
+		background-size: 400% 400%;
+		animation: gradientShift 15s ease infinite;
+		overflow: hidden;
+		padding: 2rem;
+	}
+
+	@keyframes gradientShift {
+
+		0%,
+		100% {
+			background-position: 0% 50%;
+		}
+
+		50% {
+			background-position: 100% 50%;
+		}
+	}
+
+	/* 3D Floating Books */
+	.floating-books {
+		position: absolute;
+		width: 100%;
+		height: 100%;
+		pointer-events: none;
+	}
+
+	.book {
+		position: absolute;
+		width: 80px;
+		height: 112px;
+		background: linear-gradient(145deg, #ffffff, #e6e6e6);
+		border-radius: 6px;
+		box-shadow:
+			0 10px 40px rgba(0, 0, 0, 0.3),
+			inset -2px 0 8px rgba(0, 0, 0, 0.1);
+		transform-style: preserve-3d;
+		animation: float 8s ease-in-out infinite;
+	}
+
+	.book::before {
+		content: '';
+		position: absolute;
+		left: 0;
+		top: 0;
+		width: 12px;
+		height: 100%;
+		background: linear-gradient(90deg, rgba(0, 0, 0, 0.15), transparent);
+		border-radius: 6px 0 0 6px;
+	}
+
+	.book-1 {
+		top: 10%;
+		left: 10%;
+		background: linear-gradient(145deg, #667eea, #764ba2);
+		animation-delay: 0s;
+		animation-duration: 10s;
+	}
+
+	.book-2 {
+		top: 20%;
+		right: 10%;
+		background: linear-gradient(145deg, #f093fb, #f5576c);
+		animation-delay: 1s;
+		animation-duration: 12s;
+	}
+
+	.book-3 {
+		bottom: 15%;
+		left: 8%;
+		background: linear-gradient(145deg, #4facfe, #00f2fe);
+		animation-delay: 2s;
+		animation-duration: 11s;
+	}
+
+	.book-4 {
+		bottom: 20%;
+		right: 12%;
+		background: linear-gradient(145deg, #43e97b, #38f9d7);
+		animation-delay: 1.5s;
+		animation-duration: 13s;
+	}
+
+	.book-5 {
+		top: 50%;
+		left: 5%;
+		background: linear-gradient(145deg, #fa709a, #fee140);
+		animation-delay: 0.5s;
+		animation-duration: 9s;
+	}
+
+	@keyframes float {
+
+		0%,
+		100% {
+			transform: translateY(0px) rotateX(10deg) rotateY(-15deg) rotateZ(5deg);
+		}
+
+		50% {
+			transform: translateY(-25px) rotateX(-10deg) rotateY(15deg) rotateZ(-5deg);
+		}
+	}
+
+	/* Floating Particles */
+	.particles {
+		position: absolute;
+		width: 100%;
+		height: 100%;
+	}
+
+	.particle {
+		position: absolute;
+		width: 3px;
+		height: 3px;
+		background: rgba(255, 255, 255, 0.6);
+		border-radius: 50%;
+		animation: particle-float 15s infinite;
+	}
+
+	@keyframes particle-float {
+
+		0%,
+		100% {
+			transform: translateY(0) translateX(0);
+			opacity: 0;
+		}
+
+		10% {
+			opacity: 1;
+		}
+
+		90% {
+			opacity: 1;
+		}
+
+		100% {
+			transform: translateY(-100vh) translateX(50px);
+			opacity: 0;
+		}
+	}
+
+	/* Form Card */
+	.form-card {
+		position: relative;
+		z-index: 10;
+		background: rgba(255, 255, 255, 0.95);
+		backdrop-filter: blur(20px);
+		border-radius: 30px;
+		padding: 3rem 2.5rem;
+		box-shadow: 0 30px 60px rgba(0, 0, 0, 0.3);
+		width: 100%;
+		max-width: 500px;
+		border: 1px solid rgba(255, 255, 255, 0.3);
+		animation: fadeInUp 0.8s ease-out;
+	}
+
+	@keyframes fadeInUp {
+		from {
+			opacity: 0;
+			transform: translateY(30px);
+		}
+
+		to {
+			opacity: 1;
+			transform: translateY(0);
+		}
+	}
+
+	.form-card h2 {
+		font-size: 2rem;
+		font-weight: 800;
+		text-align: center;
+		margin-bottom: 0.5rem;
+		background: linear-gradient(135deg, #667eea, #764ba2);
+		-webkit-background-clip: text;
+		-webkit-text-fill-color: transparent;
+		background-clip: text;
+	}
+
+	.form-card .subtitle {
+		text-align: center;
+		color: #666;
+		margin-bottom: 2rem;
+		font-size: 0.95rem;
+	}
+
+	.alert {
+		padding: 1rem;
+		border-radius: 12px;
+		margin-bottom: 1.5rem;
+	}
+
+	.alert-danger {
+		background: #fee;
+		color: #c33;
 	}
 
 	.form-group {
@@ -135,22 +223,189 @@
 	}
 
 	.form-group label {
-		font-weight: 500;
-		color: #333;
+		display: block;
 		margin-bottom: 0.5rem;
+		font-weight: 600;
+		color: #333;
+		font-size: 0.9rem;
+	}
+
+	.form-control {
+		width: 100%;
+		padding: 1rem 1.25rem;
+		border: 2px solid #e0e0e0;
+		border-radius: 12px;
+		font-size: 1rem;
+		transition: all 0.3s ease;
+		background: white;
+	}
+
+	.form-control:focus {
+		outline: none;
+		border-color: #667eea;
+		box-shadow: 0 0 0 4px rgba(102, 126, 234, 0.1);
 	}
 
 	.text-danger {
-		color: #dc3545;
-	}
-
-	.form-text {
+		color: #c33;
+		font-size: 0.85rem;
+		margin-top: 0.5rem;
 		display: block;
 	}
 
-	ul {
-		margin-left: 1.5rem;
-		font-size: 0.875rem;
+	.form-text {
+		font-size: 0.85rem;
+		color: #666;
+		margin-top: 0.5rem;
+		line-height: 1.4;
+	}
+
+	.custom-control-input {
+		margin-right: 0.5rem;
+	}
+
+	.custom-control-label {
+		font-size: 0.9rem;
+		color: #666;
+		cursor: pointer;
+	}
+
+	.btn-submit {
+		width: 100%;
+		padding: 1rem;
+		background: linear-gradient(135deg, #667eea, #764ba2);
+		color: white;
+		border: none;
+		border-radius: 12px;
+		font-size: 1.1rem;
+		font-weight: 700;
+		cursor: pointer;
+		transition: all 0.3s ease;
+		margin-top: 1rem;
+	}
+
+	.btn-submit:hover {
+		transform: translateY(-2px);
+		box-shadow: 0 10px 30px rgba(102, 126, 234, 0.4);
+	}
+
+	.btn-submit:active {
+		transform: translateY(0);
+	}
+
+	.form-footer {
+		text-align: center;
+		margin-top: 1.5rem;
+		color: #666;
+		font-size: 0.95rem;
+	}
+
+	.form-footer a {
+		color: #667eea;
+		text-decoration: none;
+		font-weight: 600;
+		transition: color 0.3s ease;
+	}
+
+	.form-footer a:hover {
+		color: #764ba2;
+		text-decoration: underline;
+	}
+
+	@media (max-width: 768px) {
+		.form-card {
+			padding: 2rem 1.5rem;
+		}
+
+		.book {
+			width: 50px;
+			height: 70px;
+		}
 	}
 </style>
+{% endblock %}
+
+{% block content %}
+<div class="auth-container">
+	<!-- Floating Books -->
+	<div class="floating-books">
+		<div class="book book-1"></div>
+		<div class="book book-2"></div>
+		<div class="book book-3"></div>
+		<div class="book book-4"></div>
+		<div class="book book-5"></div>
+	</div>
+
+	<!-- Particles -->
+	<div class="particles">
+		<div class="particle" style="left: 10%; animation-delay: 0s;"></div>
+		<div class="particle" style="left: 25%; animation-delay: 2s;"></div>
+		<div class="particle" style="left: 40%; animation-delay: 4s;"></div>
+		<div class="particle" style="left: 55%; animation-delay: 1s;"></div>
+		<div class="particle" style="left: 70%; animation-delay: 3s;"></div>
+		<div class="particle" style="left: 85%; animation-delay: 5s;"></div>
+	</div>
+
+	<!-- Form Card -->
+	<div class="form-card">
+		<h2>✨ Join Social Book</h2>
+		<p class="subtitle">Create your account to start sharing</p>
+
+		{% if form.non_field_errors %}
+		<div class="alert alert-danger">
+			<strong>Error!</strong>
+			{% for error in form.non_field_errors %}
+			<p>{{ error }}</p>
+			{% endfor %}
+		</div>
+		{% endif %}
+
+		<form method="post" action="{% url 'register' %}">
+			{% csrf_token %}
+
+			<div class="form-group">
+				<label>Email <span class="text-danger">*</span></label>
+				{{ form.email }}
+				{% if form.email.errors %}
+				<span class="text-danger">{{ form.email.errors }}</span>
+				{% endif %}
+			</div>
+
+			<div class="form-group">
+				<label>Password <span class="text-danger">*</span></label>
+				{{ form.password1 }}
+				{% if form.password1.errors %}
+				<span class="text-danger">{{ form.password1.errors }}</span>
+				{% endif %}
+				{% if form.password1.help_text %}
+				<small class="form-text">{{ form.password1.help_text|safe }}</small>
+				{% endif %}
+			</div>
+
+			<div class="form-group">
+				<label>Confirm Password <span class="text-danger">*</span></label>
+				{{ form.password2 }}
+				{% if form.password2.errors %}
+				<span class="text-danger">{{ form.password2.errors }}</span>
+				{% endif %}
+			</div>
+
+			<div class="form-group">
+				<div class="custom-control custom-checkbox">
+					<input type="checkbox" class="custom-control-input" id="agreeTerms" required>
+					<label class="custom-control-label" for="agreeTerms">
+						I agree to the terms and conditions
+					</label>
+				</div>
+			</div>
+
+			<button type="submit" class="btn-submit">Create Account</button>
+		</form>
+
+		<div class="form-footer">
+			Already have an account? <a href="/accounts/login/">Sign in here</a>
+		</div>
+	</div>
+</div>
+
 {% endblock %}

@@ -205,16 +205,32 @@
 </style>
 
 <script>
-	function logoutUser() {
-		fetch("/api/auth/token/logout/", {
-			method: "POST",
-			headers: {
-				"Authorization": "Token " + localStorage.getItem("token")
+	async function logoutUser() {
+		try {
+			const token = localStorage.getItem('token');
+
+			// Call API logout if token exists
+			if (token) {
+				await fetch("/api/auth/token/logout/", {
+					method: "POST",
+					headers: {
+						"Authorization": `Token ${token}`,
+						"Content-Type": "application/json"
+					}
+				});
 			}
-		}).finally(() => {
-			localStorage.removeItem("token");
-			window.location.href = "/";
-		});
+
+			// Clear localStorage token
+			localStorage.removeItem('token');
+
+			// Redirect to Django logout (clears session) then to home
+			window.location.href = '/accounts/logout/';
+		} catch (error) {
+			console.error('Logout error:', error);
+			// Even if API fails, clear token and redirect
+			localStorage.removeItem('token');
+			window.location.href = '/accounts/logout/';
+		}
 	}
 </script>
 {% endblock %}

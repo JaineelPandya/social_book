@@ -1,46 +1,35 @@
 {% load static %}
 <!DOCTYPE html>
 <html>
+
 <head>
 	<!-- Basic Page Info -->
 	<meta charset="utf-8">
 	<title>{% block title %}Social Book{% endblock %}</title>
 
 	<!-- Site favicon -->
-	<link rel="apple-touch-icon" sizes="180x180" href="{% static 'deskapp2-master/vendors/images/apple-touch-icon.png' %}">
-	<link rel="icon" type="image/png" sizes="32x32" href="{% static 'deskapp2-master/vendors/images/favicon-32x32.png' %}">
-	<link rel="icon" type="image/png" sizes="16x16" href="{% static 'deskapp2-master/vendors/images/favicon-16x16.png' %}">
+	<link rel="apple-touch-icon" sizes="180x180"
+		href="{% static 'deskapp2-master/vendors/images/apple-touch-icon.png' %}">
+	<link rel="icon" type="image/png" sizes="32x32"
+		href="{% static 'deskapp2-master/vendors/images/favicon-32x32.png' %}">
+	<link rel="icon" type="image/png" sizes="16x16"
+		href="{% static 'deskapp2-master/vendors/images/favicon-16x16.png' %}">
 
 	<!-- Mobile Specific Metas -->
 	<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
 
 	<!-- Google Font -->
-	<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
-	
+	<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap"
+		rel="stylesheet">
+
 	<!-- CSS -->
 	<link rel="stylesheet" type="text/css" href="{% static 'deskapp2-master/vendors/styles/core.css' %}">
 	<link rel="stylesheet" type="text/css" href="{% static 'deskapp2-master/vendors/styles/icon-font.min.css' %}">
 	<link rel="stylesheet" type="text/css" href="{% static 'deskapp2-master/vendors/styles/style.css' %}">
-	
+
 	{% block extra_css %}{% endblock %}
 </head>
-<script>
-(function () {
-    const protectedRoutes = [
-        "/accounts/dashboard/",
-        "/accounts/upload-books/",
-        "/accounts/my-books/",
-        "/accounts/enroll-data/"
-    ];
 
-    const path = window.location.pathname;
-    const token = localStorage.getItem("token");
-
-    if (!token && protectedRoutes.some(p => path.startsWith(p))) {
-        window.location.href = "/accounts/login/";
-    }
-})();
-</script>
 <body>
 	{% block content %}{% endblock %}
 
@@ -49,7 +38,8 @@
 	<script src="{% static 'deskapp2-master/vendors/scripts/script.min.js' %}"></script>
 	<script src="{% static 'deskapp2-master/vendors/scripts/process.js' %}"></script>
 	<script src="{% static 'deskapp2-master/vendors/scripts/layout-settings.js' %}"></script>
-	
+
 	{% block extra_js %}{% endblock %}
 </body>
+
 </html>

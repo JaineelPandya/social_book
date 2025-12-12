@@ -15,7 +15,14 @@ class CustomUser(AbstractUser):
     email = models.EmailField(_("email address"), unique=True)
 
     # ✅ YOUR CUSTOM FIELDS
-    public_visibility = models.BooleanField(default=True)
+    public_visibility = models.BooleanField(
+        default=True,
+        help_text="If True, this user's profile appears in public listings."
+    )
+    email_verified = models.BooleanField(
+        default=False,
+        help_text="True if user has verified their email address"
+    )
     birth_year = models.IntegerField(null=True, blank=True)
     address = models.TextField(null=True, blank=True)
     bio = models.TextField(blank=True, null=True)

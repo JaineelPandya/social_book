@@ -5,83 +5,447 @@
 
 {% block extra_css %}
 <style>
-.hero {
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  height:80vh;
-  background: linear-gradient(120deg,#0f1724 0%, #8f2727ff 50%, #6379cbff 100%);
-  color: #fff;
-  text-align:center;
-  overflow:hidden;
-}
-.hero h1{font-size:3rem;margin:0 0 0.5rem;animation:floatIn 900ms ease-out;}
-.hero p{font-size:1.1rem;opacity:0.95;animation:fadeIn 1200ms ease-out 200ms both}
-.cta {margin-top:1.25rem;display:inline-flex;gap:.75rem;animation:floatIn 1100ms ease-out 300ms both}
-.btn-cta{background:#ffd166;color:#09203f;padding:.65rem 1rem;border-radius:999px;border:0;font-weight:700;box-shadow:0 6px 18px rgba(15,20,36,0.35);transform:translateY(0);transition:transform .18s}
-.btn-cta.secondary{background:transparent;border:1px solid rgba(255,255,255,0.2);color:#fff}
-.btn-cta:hover{transform:translateY(-4px)}
-.hero-decor{position:absolute;right:-10%;top:-10%;width:60vw;height:60vw;opacity:.12;filter:blur(36px);background:radial-gradient(circle at 30% 30%, #ffd166, transparent 20%), radial-gradient(circle at 70% 70%, #6dd3ff, transparent 25%)}
-@keyframes floatIn{from{opacity:0;transform:translateY(22px)}to{opacity:1;transform:translateY(0)}}
-@keyframes fadeIn{from{opacity:0}to{opacity:1}}
+  * {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+  }
 
-.features {padding:3rem 0;background:#f8fbff}
-.feature-grid{display:flex;gap:1rem;flex-wrap:wrap;justify-content:center}
-.feature{background:white;border-radius:12px;padding:1.25rem;min-width:220px;max-width:320px;box-shadow:0 6px 18px rgba(33,37,78,0.06);transform:translateY(0);transition:transform .25s}
-.feature:hover{transform:translateY(-6px)}
-.feature h4{margin:0 0 .5rem}
+  body {
+    overflow-x: hidden;
+  }
+
+  .hero-container {
+    position: relative;
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 25%, #f093fb 50%, #4facfe 75%, #00f2fe 100%);
+    background-size: 400% 400%;
+    animation: gradientShift 15s ease infinite;
+    overflow: hidden;
+  }
+
+  @keyframes gradientShift {
+
+    0%,
+    100% {
+      background-position: 0% 50%;
+    }
+
+    50% {
+      background-position: 100% 50%;
+    }
+  }
+
+  /* 3D Floating Books */
+  .floating-books {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+  }
+
+  .book {
+    position: absolute;
+    width: 100px;
+    height: 140px;
+    background: linear-gradient(145deg, #ffffff, #e6e6e6);
+    border-radius: 8px;
+    box-shadow:
+      0 10px 40px rgba(0, 0, 0, 0.3),
+      inset -2px 0 8px rgba(0, 0, 0, 0.1);
+    transform-style: preserve-3d;
+    animation: float 8s ease-in-out infinite;
+  }
+
+  .book::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 15px;
+    height: 100%;
+    background: linear-gradient(90deg, rgba(0, 0, 0, 0.15), transparent);
+    border-radius: 8px 0 0 8px;
+  }
+
+  .book::after {
+    content: '';
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(135deg,
+        rgba(255, 255, 255, 0.4) 0%,
+        rgba(255, 255, 255, 0.1) 50%,
+        transparent 100%);
+    border-radius: 8px;
+  }
+
+  .book-1 {
+    top: 10%;
+    left: 10%;
+    background: linear-gradient(145deg, #667eea, #764ba2);
+    animation-delay: 0s;
+    animation-duration: 10s;
+  }
+
+  .book-2 {
+    top: 20%;
+    right: 15%;
+    background: linear-gradient(145deg, #f093fb, #f5576c);
+    animation-delay: 1s;
+    animation-duration: 12s;
+  }
+
+  .book-3 {
+    bottom: 15%;
+    left: 15%;
+    background: linear-gradient(145deg, #4facfe, #00f2fe);
+    animation-delay: 2s;
+    animation-duration: 11s;
+  }
+
+  .book-4 {
+    bottom: 25%;
+    right: 10%;
+    background: linear-gradient(145deg, #43e97b, #38f9d7);
+    animation-delay: 1.5s;
+    animation-duration: 13s;
+  }
+
+  .book-5 {
+    top: 50%;
+    left: 5%;
+    background: linear-gradient(145deg, #fa709a, #fee140);
+    animation-delay: 0.5s;
+    animation-duration: 9s;
+  }
+
+  .book-6 {
+    top: 60%;
+    right: 8%;
+    background: linear-gradient(145deg, #30cfd0, #330867);
+    animation-delay: 2.5s;
+    animation-duration: 14s;
+  }
+
+  @keyframes float {
+
+    0%,
+    100% {
+      transform: translateY(0px) rotateX(10deg) rotateY(-15deg) rotateZ(5deg);
+    }
+
+    50% {
+      transform: translateY(-30px) rotateX(-10deg) rotateY(15deg) rotateZ(-5deg);
+    }
+  }
+
+  /* Floating Particles */
+  .particles {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+  }
+
+  .particle {
+    position: absolute;
+    width: 4px;
+    height: 4px;
+    background: rgba(255, 255, 255, 0.6);
+    border-radius: 50%;
+    animation: particle-float 15s infinite;
+  }
+
+  @keyframes particle-float {
+
+    0%,
+    100% {
+      transform: translateY(0) translateX(0);
+      opacity: 0;
+    }
+
+    10% {
+      opacity: 1;
+    }
+
+    90% {
+      opacity: 1;
+    }
+
+    100% {
+      transform: translateY(-100vh) translateX(50px);
+      opacity: 0;
+    }
+  }
+
+  /* Content */
+  .hero-content {
+    position: relative;
+    z-index: 10;
+    text-align: center;
+    color: white;
+    max-width: 800px;
+    padding: 2rem;
+    animation: fadeInUp 1s ease-out;
+  }
+
+  @keyframes fadeInUp {
+    from {
+      opacity: 0;
+      transform: translateY(30px);
+    }
+
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  .hero-content h1 {
+    font-size: 4rem;
+    font-weight: 800;
+    margin-bottom: 1rem;
+    text-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+    background: linear-gradient(135deg, #ffffff, #f0f0f0);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    animation: shimmer 3s ease-in-out infinite;
+  }
+
+  @keyframes shimmer {
+
+    0%,
+    100% {
+      filter: brightness(1);
+    }
+
+    50% {
+      filter: brightness(1.2);
+    }
+  }
+
+  .hero-content p {
+    font-size: 1.3rem;
+    margin-bottom: 2.5rem;
+    opacity: 0.95;
+    text-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+    animation: fadeIn 1.5s ease-out 0.3s both;
+  }
+
+  @keyframes fadeIn {
+    from {
+      opacity: 0;
+    }
+
+    to {
+      opacity: 0.95;
+    }
+  }
+
+  .cta-buttons {
+    display: flex;
+    gap: 1.5rem;
+    justify-content: center;
+    flex-wrap: wrap;
+    animation: fadeIn 1.5s ease-out 0.6s both;
+  }
+
+  .btn-cta {
+    padding: 1rem 3rem;
+    font-size: 1.1rem;
+    font-weight: 700;
+    border-radius: 50px;
+    text-decoration: none;
+    transition: all 0.3s ease;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+    position: relative;
+    overflow: hidden;
+  }
+
+  .btn-cta::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+    transition: left 0.5s;
+  }
+
+  .btn-cta:hover::before {
+    left: 100%;
+  }
+
+  .btn-primary {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    border: none;
+  }
+
+  .btn-primary:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 15px 40px rgba(102, 126, 234, 0.4);
+  }
+
+  .btn-secondary {
+    background: rgba(255, 255, 255, 0.2);
+    color: white;
+    border: 2px solid rgba(255, 255, 255, 0.5);
+    backdrop-filter: blur(10px);
+  }
+
+  .btn-secondary:hover {
+    background: rgba(255, 255, 255, 0.3);
+    transform: translateY(-3px);
+    box-shadow: 0 15px 40px rgba(255, 255, 255, 0.2);
+  }
+
+  /* Features Section */
+  .features {
+    padding: 5rem 2rem;
+    background: linear-gradient(180deg, rgba(255, 255, 255, 0.05), rgba(255, 255, 255, 0.1));
+    backdrop-filter: blur(20px);
+  }
+
+  .features-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 2rem;
+    max-width: 1200px;
+    margin: 0 auto;
+  }
+
+  .feature-card {
+    background: rgba(255, 255, 255, 0.15);
+    backdrop-filter: blur(10px);
+    border-radius: 20px;
+    padding: 2rem;
+    text-align: center;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    transition: all 0.3s ease;
+    animation: fadeInUp 1s ease-out both;
+  }
+
+  .feature-card:nth-child(1) {
+    animation-delay: 0.1s;
+  }
+
+  .feature-card:nth-child(2) {
+    animation-delay: 0.2s;
+  }
+
+  .feature-card:nth-child(3) {
+    animation-delay: 0.3s;
+  }
+
+  .feature-card:hover {
+    transform: translateY(-10px);
+    background: rgba(255, 255, 255, 0.25);
+    box-shadow: 0 20px 50px rgba(0, 0, 0, 0.2);
+  }
+
+  .feature-icon {
+    font-size: 3rem;
+    margin-bottom: 1rem;
+    filter: drop-shadow(0 4px 10px rgba(0, 0, 0, 0.3));
+  }
+
+  .feature-card h3 {
+    font-size: 1.5rem;
+    margin-bottom: 1rem;
+    color: white;
+    text-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
+  }
+
+  .feature-card p {
+    color: rgba(255, 255, 255, 0.9);
+    line-height: 1.6;
+  }
+
+  @media (max-width: 768px) {
+    .hero-content h1 {
+      font-size: 2.5rem;
+    }
+
+    .hero-content p {
+      font-size: 1.1rem;
+    }
+
+    .cta-buttons {
+      flex-direction: column;
+      align-items: stretch;
+    }
+
+    .book {
+      width: 60px;
+      height: 84px;
+    }
+  }
 </style>
 {% endblock %}
 
 {% block content %}
-<div class="hero">
-  <div class="hero-decor" aria-hidden="true"></div>
+<div class="hero-container">
+  <!-- Floating Books 3D Animation -->
+  <div class="floating-books">
+    <div class="book book-1"></div>
+    <div class="book book-2"></div>
+    <div class="book book-3"></div>
+    <div class="book book-4"></div>
+    <div class="book book-5"></div>
+    <div class="book book-6"></div>
+  </div>
 
-  <div>
-    <h1>Welcome to Social Book</h1>
-    <p>Your community for sharing, discovering, and showcasing books and authors — beautifully.</p>
+  <!-- Floating Particles -->
+  <div class="particles">
+    <div class="particle" style="left: 10%; animation-delay: 0s;"></div>
+    <div class="particle" style="left: 20%; animation-delay: 2s;"></div>
+    <div class="particle" style="left: 30%; animation-delay: 4s;"></div>
+    <div class="particle" style="left: 40%; animation-delay: 1s;"></div>
+    <div class="particle" style="left: 50%; animation-delay: 3s;"></div>
+    <div class="particle" style="left: 60%; animation-delay: 5s;"></div>
+    <div class="particle" style="left: 70%; animation-delay: 1.5s;"></div>
+    <div class="particle" style="left: 80%; animation-delay: 3.5s;"></div>
+    <div class="particle" style="left: 90%; animation-delay: 2.5s;"></div>
+  </div>
 
-    <!-- ✅ Dynamic CTA Buttons -->
-    <div class="cta" id="cta-buttons">
-      <a class="btn-cta" href="/login/">Sign in</a>
-      <a class="btn-cta secondary" href="/register/">Create account</a>
+  <!-- Hero Content -->
+  <div class="hero-content">
+    <h1>📚 Social Book</h1>
+    <p>Your vibrant community for sharing, discovering, and showcasing books and authors — beautifully crafted for book
+      lovers worldwide.</p>
+
+    <div class="cta-buttons">
+      <a href="/accounts/login/" class="btn-cta btn-primary">Sign In</a>
+      <a href="/accounts/register/" class="btn-cta btn-secondary">Create Account</a>
     </div>
-
   </div>
 </div>
 
-<div class="features container">
-  <div class="feature-grid">
-    <div class="feature">
-      <h4>Interactive Dashboard</h4>
-      <p>Overview of activity, posts, followers and quick actions — with animated UI.</p>
+<!-- Features Section -->
+<div class="features">
+  <div class="features-grid">
+    <div class="feature-card">
+      <div class="feature-icon">📖</div>
+      <h3>Discover Books</h3>
+      <p>Explore a vast collection of books shared by authors and readers from around the world.</p>
     </div>
-    <div class="feature">
-      <h4>Upload & Share</h4>
-      <p>Upload your books and manage visibility to make them discoverable.</p>
+    <div class="feature-card">
+      <div class="feature-icon">✍️</div>
+      <h3>Share Your Work</h3>
+      <p>Upload and showcase your books with customizable visibility settings for your audience.</p>
     </div>
-    <div class="feature">
-      <h4>Discover Authors</h4>
-      <p>Browse authors and sellers and connect with creators you like.</p>
+    <div class="feature-card">
+      <div class="feature-icon">🌟</div>
+      <h3>Connect</h3>
+      <p>Follow your favorite authors and join a thriving community of book enthusiasts.</p>
     </div>
   </div>
 </div>
-
-<!-- ✅ SINGLE TOKEN CHECK SCRIPT -->
-<script>
-  try {
-    const token = localStorage.getItem("token");
-    const cta = document.getElementById("cta-buttons");
-
-    if (token) {
-      // ✅ Correct dashboard path
-      cta.innerHTML = `
-        <a class="btn-cta" href="/accounts/dashboard/">Go to Dashboard</a>
-      `;
-    }
-  } catch (e) {
-    console.warn("localStorage unavailable", e);
-  }
-</script>
 
 {% endblock %}

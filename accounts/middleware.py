@@ -1,6 +1,7 @@
 from django.conf import settings
 from django.shortcuts import redirect
 
+
 class LoginRequiredMiddleware:
     """Middleware that requires a user to be authenticated to view any page
     except for the paths listed in settings.LOGIN_EXEMPT_URLS.
@@ -33,5 +34,5 @@ class LoginRequiredMiddleware:
         if path.startswith('/static/') or path.startswith('/media/') or path.startswith('/api/auth/') or path.startswith('/api/') or path.startswith('/admin/'):
             return self.get_response(request)
 
-        # Otherwise redirect to login
-        return redirect(f"{settings.LOGIN_URL}?next={request.path}")
+        # Redirect to login page (not API endpoint)
+        return redirect(f"/accounts/login/?next={request.path}")

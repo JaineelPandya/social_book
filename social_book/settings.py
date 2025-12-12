@@ -147,7 +147,7 @@ MEDIA_URL = '/media/'
 MEDIA_ROOT = BASE_DIR / 'media'
 
 LOGIN_REDIRECT_URL = '/accounts/dashboard/'
-LOGOUT_REDIRECT_URL = '/accounts/login/'
+LOGOUT_REDIRECT_URL = '/accounts/'
 AUTH_USER_MODEL = 'accounts.CustomUser'
 LOGIN_URL = '/accounts/login/'
 
@@ -158,6 +158,7 @@ SESSION_SAVE_EVERY_REQUEST = True
 
 # URLs to exempt from login requirement (strings should start with '/')
 LOGIN_EXEMPT_URLS = [
+    '/',
     '/accounts/',
     '/accounts/login/',
     '/accounts/register/',

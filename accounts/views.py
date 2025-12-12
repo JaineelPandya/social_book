@@ -14,15 +14,19 @@ from django.shortcuts import render, redirect, get_object_or_404
 from django.http import HttpResponse, JsonResponse
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.views import LoginView
-from django.contrib.auth import login as django_login
+from django.contrib.auth import login as django_login, logout
 from django.contrib import messages
 from django.views.decorators.http import require_http_methods
 from django.views.decorators.csrf import csrf_exempt
 from django.conf import settings
 from django.core.mail import send_mail
 from rest_framework.authtoken.models import Token
+from rest_framework.decorators import api_view, permission_classes
+from rest_framework.permissions import IsAuthenticated
+from rest_framework.response import Response
+from rest_framework import status
 
-from .forms import CustomUserCreationForm, UploadFileForm
+from .forms import CustomUserCreationForm, UploadFileForm, ProfileUpdateForm
 from .models import UploadedFile, EnrolledData, CustomUser
 
 
@@ -36,18 +40,35 @@ def home(request):
 
 
 def register(request):
-    """User registration view with auto-login."""
+    """User registration view with email verification."""
     if request.method == "POST":
         form = CustomUserCreationForm(request.POST)
         if form.is_valid():
-            user = form.save()
-            # Auto-login the user after registration
-            user.backend = 'django.contrib.auth.backends.ModelBackend'
-            django_login(request, user)
-            return redirect('welcome')
+            # Create user but don't activate yet
+            user = form.save(commit=False)
+            user.is_active = False  # User must verify email first
+            user.email_verified = False
+            user.save()
+            
+            # Send activation email
+            from .email_utils import send_activation_email
+            email_sent = send_activation_email(user, request)
+            
+            if email_sent:
+                messages.success(
+                    request,
+                    'Account created! Please check your email to activate your account.'
+                )
+            else:
+                messages.warning(
+                    request,
+                    'Account created but activation email failed to send. Please contact support.'
+                )
+            
+            return redirect('home')
     else:
         form = CustomUserCreationForm()
-
+    
     return render(request, 'accounts/register.html', {'form': form})
 
 
@@ -61,6 +82,42 @@ def login_page(request):
     return render(request, 'accounts/login.html')
 
 
+def logout_view(request):
+    """Logout view that clears session and redirects to home."""
+    logout(request)
+    return redirect('home')
+
+
+def activate_account(request, uidb64, token):
+    """Activate user account via email verification link."""
+    from django.utils.http import urlsafe_base64_decode
+    from django.utils.encoding import force_str
+    from .tokens import account_activation_token
+    
+    try:
+        uid = force_str(urlsafe_base64_decode(uidb64))
+        user = CustomUser.objects.get(pk=uid)
+    except (TypeError, ValueError, OverflowError, CustomUser.DoesNotExist):
+        user = None
+    
+    if user is not None and account_activation_token.check_token(user, token):
+        user.is_active = True
+        user.email_verified = True
+        user.save()
+        
+        messages.success(
+            request,
+            '✅ Your email has been verified! You can now sign in to your account.'
+        )
+        return redirect('login')
+    else:
+        messages.error(
+            request,
+            '❌ Activation link is invalid or has expired. Please contact support.'
+        )
+        return redirect('home')
+
+
 class CustomLoginView(LoginView):
     """Django's built-in login view for form-based authentication."""
     template_name = 'accounts/login.html'
@@ -70,58 +127,53 @@ class CustomLoginView(LoginView):
 # TOKEN-BASED AUTHENTICATION
 # ============================================================================
 
-@csrf_exempt
+@api_view(['POST'])
+@permission_classes([])
 def token_session_login(request):
     """
-    Convert DRF auth token into Django session login.
-    
-    POST accepts JSON: {"token": "<token_key>"}
-    or Authorization header: "Token <token_key>"
-    
-    Returns JSON response with success status and creates Django session.
-    This enables @login_required to work after token-based login.
+    Create a session cookie from an auth token.
+    This endpoint is called client-side after obtaining a token from Djoser.
     """
-    if request.method != "POST":
-        return JsonResponse({"detail": "Method not allowed."}, status=405)
-
+    token_str = request.data.get('token')
+    
+    if not token_str:
+        return Response(
+            {'detail': 'No token provided'},
+            status=status.HTTP_400_BAD_REQUEST
+        )
+    
     try:
-        # Try to get token from JSON body
-        try:
-            payload = json.loads(request.body.decode() or "{}")
-            token_key = payload.get("token")
-        except Exception:
-            token_key = None
-
-        # Fallback: Try Authorization header "Token <key>"
-        if not token_key:
-            auth_header = request.META.get("HTTP_AUTHORIZATION", "")
-            parts = auth_header.split()
-            if len(parts) == 2 and parts[0].lower() == "token":
-                token_key = parts[1]
-
-        if not token_key:
-            return JsonResponse({"detail": "No token provided."}, status=400)
-
-        # Validate token
-        token = Token.objects.select_related("user").get(key=token_key)
-        user = token.user
-
-        # Set backend explicitly for session login
-        user.backend = "django.contrib.auth.backends.ModelBackend"
+        # Look up the Token object
+        token_obj = Token.objects.get(key=token_str)
+        user = token_obj.user
+        
+        # Check if email is verified
+        if not user.email_verified:
+            return Response(
+                {'detail': 'Please verify your email before logging in. Check your inbox for the activation link.'},
+                status=status.HTTP_403_FORBIDDEN
+            )
         
         # Create Django session
-        django_login(request, user, backend="django.contrib.auth.backends.ModelBackend")
-
-        return JsonResponse({
-            "detail": "Session created.",
-            "user_id": user.id,
-            "email": user.email
-        }, status=200)
-
+        django_login(request, user, backend='django.contrib.auth.backends.ModelBackend')
+        
+        # Send login notification email
+        from .email_utils import send_login_notification
+        send_login_notification(user, request)
+        
+        return Response({'detail': 'Session created successfully'}, status=status.HTTP_200_OK)
+    
     except Token.DoesNotExist:
-        return JsonResponse({"detail": "Invalid token."}, status=401)
+        return Response(
+            {'detail': 'Invalid token'},
+            status=status.HTTP_401_UNAUTHORIZED
+        )
     except Exception as e:
-        return JsonResponse({"detail": f"Server error: {str(e)}"}, status=500)
+        return Response(
+            {'detail': f'Login failed: {str(e)}'},
+            status=status.HTTP_500_INTERNAL_SERVER_ERROR
+        )
+
 
 
 # ============================================================================

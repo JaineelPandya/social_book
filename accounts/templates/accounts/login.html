@@ -1,240 +1,436 @@
 ﻿{% extends 'base/base.html' %}
-{% block title %}Login{% endblock %}
+{% load static %}
+
+{% block title %}Sign In - Social Book{% endblock %}
 
 {% block extra_css %}
 <style>
-	body {
-		background-color: #f5f5f5;
-	}
-	.login-container {
-		max-width: 400px;
-		margin: 80px auto;
-		padding: 30px;
-		background: #fff;
-		border-radius: 8px;
-		box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-	}
-	.login-container h2 {
-		margin-bottom: 20px;
-		font-weight: 600;		
-		text-align: center;
-	}
-	.form-group {
-		margin-bottom: 15px;
-	}
-	.form-control {
-		width: 100%;
-		height: 45px;
-		font-size: 16px;
-		border-radius: 6px;
-		border: 1px solid #ccc;
-		padding: 10px;	
-		transition: border-color 0.3s;
+	* {
+		margin: 0;
+		padding: 0;
 		box-sizing: border-box;
 	}
-	.form-control:focus {
-		border-color: #007bff;
-		box-shadow: 0 0 5px rgba(0, 123, 255, 0.5);
-		outline: none;
+
+	body {
+		overflow-x: hidden;
 	}
-	#signin-btn {
+
+	.auth-container {
+		position: relative;
+		min-height: 100vh;
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		background: linear-gradient(135deg, #667eea 0%, #764ba2 25%, #f093fb 50%, #4facfe 75%, #00f2fe 100%);
+		background-size: 400% 400%;
+		animation: gradientShift 15s ease infinite;
+		overflow: hidden;
+		padding: 2rem;
+	}
+
+	@keyframes gradientShift {
+
+		0%,
+		100% {
+			background-position: 0% 50%;
+		}
+
+		50% {
+			background-position: 100% 50%;
+		}
+	}
+
+	/* 3D Floating Books */
+	.floating-books {
+		position: absolute;
 		width: 100%;
-		height: 45px;
-		font-size: 16px;
+		height: 100%;
+		pointer-events: none;
+	}
+
+	.book {
+		position: absolute;
+		width: 80px;
+		height: 112px;
+		background: linear-gradient(145deg, #ffffff, #e6e6e6);
 		border-radius: 6px;
-		background-color: #007bff;		
-		color: #fff;
-		border: none;
-		cursor: pointer;
-		transition: background-color 0.3s;
-		margin-top: 10px;
+		box-shadow:
+			0 10px 40px rgba(0, 0, 0, 0.3),
+			inset -2px 0 8px rgba(0, 0, 0, 0.1);
+		transform-style: preserve-3d;
+		animation: float 8s ease-in-out infinite;
 	}
-	#signin-btn:hover {
-		background-color: #0056b3;
+
+	.book::before {
+		content: '';
+		position: absolute;
+		left: 0;
+		top: 0;
+		width: 12px;
+		height: 100%;
+		background: linear-gradient(90deg, rgba(0, 0, 0, 0.15), transparent);
+		border-radius: 6px 0 0 6px;
 	}
-	#signin-btn:disabled {
-		background-color: #cccccc;
-		cursor: not-allowed;
+
+	.book-1 {
+		top: 10%;
+		left: 10%;
+		background: linear-gradient(145deg, #667eea, #764ba2);
+		animation-delay: 0s;
 	}
+
+	.book-2 {
+		top: 20%;
+		right: 10%;
+		background: linear-gradient(145deg, #f093fb, #f5576c);
+		animation-delay: 1s;
+	}
+
+	.book-3 {
+		bottom: 15%;
+		left: 8%;
+		background: linear-gradient(145deg, #4facfe, #00f2fe);
+		animation-delay: 2s;
+	}
+
+	.book-4 {
+		bottom: 20%;
+		right: 12%;
+		background: linear-gradient(145deg, #43e97b, #38f9d7);
+		animation-delay: 1.5s;
+	}
+
+	@keyframes float {
+
+		0%,
+		100% {
+			transform: translateY(0px) rotateX(10deg) rotateY(-15deg) rotateZ(5deg);
+		}
+
+		50% {
+			transform: translateY(-25px) rotateX(-10deg) rotateY(15deg) rotateZ(-5deg);
+		}
+	}
+
+	/* Floating Particles */
+	.particles {
+		position: absolute;
+		width: 100%;
+		height: 100%;
+	}
+
+	.particle {
+		position: absolute;
+		width: 3px;
+		height: 3px;
+		background: rgba(255, 255, 255, 0.6);
+		border-radius: 50%;
+		animation: particle-float 15s infinite;
+	}
+
+	@keyframes particle-float {
+
+		0%,
+		100% {
+			transform: translateY(0) translateX(0);
+			opacity: 0;
+		}
+
+		10% {
+			opacity: 1;
+		}
+
+		90% {
+			opacity: 1;
+		}
+
+		100% {
+			transform: translateY(-100vh) translateX(50px);
+			opacity: 0;
+		}
+	}
+
+	/* Form Card */
+	.form-card {
+		position: relative;
+		z-index: 10;
+		background: rgba(255, 255, 255, 0.95);
+		backdrop-filter: blur(20px);
+		border-radius: 30px;
+		padding: 3rem 2.5rem;
+		box-shadow: 0 30px 60px rgba(0, 0, 0, 0.3);
+		width: 100%;
+		max-width: 450px;
+		border: 1px solid rgba(255, 255, 255, 0.3);
+		animation: fadeInUp 0.8s ease-out;
+	}
+
+	@keyframes fadeInUp {
+		from {
+			opacity: 0;
+			transform: translateY(30px);
+		}
+
+		to {
+			opacity: 1;
+			transform: translateY(0);
+		}
+	}
+
+	.form-card h2 {
+		font-size: 2rem;
+		font-weight: 800;
+		text-align: center;
+		margin-bottom: 0.5rem;
+		background: linear-gradient(135deg, #667eea, #764ba2);
+		-webkit-background-clip: text;
+		-webkit-text-fill-color: transparent;
+		background-clip: text;
+	}
+
+	.form-card .subtitle {
+		text-align: center;
+		color: #666;
+		margin-bottom: 2rem;
+		font-size: 0.95rem;
+	}
+
 	#error-msg {
-		color: #d32f2f;
-		background-color: #ffebee;
-		margin-bottom: 15px;	
-		padding: 10px;
-		border-radius: 4px;
+		background: #fee;
+		color: #c33;
+		padding: 1rem;
+		border-radius: 12px;
+		margin-bottom: 1.5rem;
 		display: none;
 		text-align: center;
+		font-size: 0.9rem;
 	}
-	.login-footer {
+
+	.form-group {
+		margin-bottom: 1.5rem;
+	}
+
+	.form-group label {
+		display: block;
+		margin-bottom: 0.5rem;
+		font-weight: 600;
+		color: #333;
+		font-size: 0.9rem;
+	}
+
+	.form-control {
+		width: 100%;
+		padding: 1rem 1.25rem;
+		border: 2px solid #e0e0e0;
+		border-radius: 12px;
+		font-size: 1rem;
+		transition: all 0.3s ease;
+		background: white;
+	}
+
+	.form-control:focus {
+		outline: none;
+		border-color: #667eea;
+		box-shadow: 0 0 0 4px rgba(102, 126, 234, 0.1);
+	}
+
+	.btn-submit {
+		width: 100%;
+		padding: 1rem;
+		background: linear-gradient(135deg, #667eea, #764ba2);
+		color: white;
+		border: none;
+		border-radius: 12px;
+		font-size: 1.1rem;
+		font-weight: 700;
+		cursor: pointer;
+		transition: all 0.3s ease;
+		margin-top: 1rem;
+	}
+
+	.btn-submit:hover {
+		transform: translateY(-2px);
+		box-shadow: 0 10px 30px rgba(102, 126, 234, 0.4);
+	}
+
+	.btn-submit:active {
+		transform: translateY(0);
+	}
+
+	.btn-submit:disabled {
+		opacity: 0.6;
+		cursor: not-allowed;
+	}
+
+	.form-footer {
 		text-align: center;
-		margin-top: 15px;
-		font-size: 14px;
+		margin-top: 1.5rem;
+		color: #666;
+		font-size: 0.95rem;
 	}
-	.login-footer a {
-		color: #007bff;
+
+	.form-footer a {
+		color: #667eea;
 		text-decoration: none;
+		font-weight: 600;
+		transition: color 0.3s ease;
 	}
-	.login-footer a:hover {
+
+	.form-footer a:hover {
+		color: #764ba2;
 		text-decoration: underline;
+	}
+
+	@media (max-width: 768px) {
+		.form-card {
+			padding: 2rem 1.5rem;
+		}
+
+		.book {
+			width: 50px;
+			height: 70px;
+		}
 	}
 </style>
 {% endblock %}
 
 {% block content %}
-<div class="login-container">
-	<h2>Sign In to Your Account</h2>
-	
-	<!-- Error message display -->
-	<div id="error-msg"></div>
-	
-	<!-- Login form -->
-	<form id="login-form" method="POST">
-		{% csrf_token %}
-		
-		<div class="form-group">
-			<label for="email">Email Address</label>
-			<input 
-				type="email" 
-				id="email" 
-				name="email" 
-				class="form-control" 
-				placeholder="Enter your email"
-				required
-			/>
+<div class="auth-container">
+	<!-- Floating Books -->
+	<div class="floating-books">
+		<div class="book book-1"></div>
+		<div class="book book-2"></div>
+		<div class="book book-3"></div>
+		<div class="book book-4"></div>
+	</div>
+
+	<!-- Particles -->
+	<div class="particles">
+		<div class="particle" style="left: 15%; animation-delay: 0s;"></div>
+		<div class="particle" style="left: 30%; animation-delay: 2s;"></div>
+		<div class="particle" style="left: 45%; animation-delay: 4s;"></div>
+		<div class="particle" style="left: 60%; animation-delay: 1s;"></div>
+		<div class="particle" style="left: 75%; animation-delay: 3s;"></div>
+		<div class="particle" style="left: 85%; animation-delay: 5s;"></div>
+	</div>
+
+	<!-- Form Card -->
+	<div class="form-card">
+		<h2>📚 Welcome Back</h2>
+		<p class="subtitle">Sign in to continue your journey</p>
+
+		<div id="error-msg"></div>
+
+		<form id="login-form" method="POST">
+			{% csrf_token %}
+
+			<div class="form-group">
+				<label for="email">Email Address</label>
+				<input type="email" id="email" name="email" class="form-control" placeholder="your@email.com" required
+					autocomplete="email" />
+			</div>
+
+			<div class="form-group">
+				<label for="password">Password</label>
+				<input type="password" id="password" name="password" class="form-control" placeholder="••••••••"
+					required autocomplete="current-password" />
+			</div>
+
+			<button type="submit" id="signin-btn" class="btn-submit">Sign In</button>
+		</form>
+
+		<div class="form-footer">
+			Don't have an account? <a href="/accounts/register/">Create one here</a>
 		</div>
-
-		<div class="form-group">
-			<label for="password">Password</label>
-			<input 
-				type="password" 
-				id="password" 
-				name="password" 
-				class="form-control" 
-				placeholder="Enter your password"
-				required
-			/>
-		</div>
-
-		<button type="submit" id="signin-btn" class="btn btn-primary">Sign In</button>
-	</form>
-
-	<div class="login-footer">
-		Don't have an account? <a href="{% url 'register' %}">Register here</a>
 	</div>
 </div>
 
 <script>
-document.getElementById('login-form').addEventListener('submit', loginUser);
+	document.getElementById('login-form').addEventListener('submit', loginUser);
 
-async function loginUser(event) {
-	event.preventDefault();
-	event.stopPropagation();
+	async function loginUser(event) {
+		event.preventDefault();
+		event.stopPropagation();
 
-	const signinBtn = document.getElementById('signin-btn');
-	const emailVal = document.getElementById('email').value.trim();
-	const passwordVal = document.getElementById('password').value;
-	const errEl = document.getElementById('error-msg');
+		const signinBtn = document.getElementById('signin-btn');
+		const emailVal = document.getElementById('email').value.trim();
+		const passwordVal = document.getElementById('password').value;
+		const errEl = document.getElementById('error-msg');
 
-	// Clear error
-	errEl.style.display = 'none';
-	errEl.textContent = '';
+		errEl.style.display = 'none';
+		errEl.textContent = '';
 
-	// Validation
-	if (!emailVal || !passwordVal) {
-		errEl.textContent = 'Please enter both email and password.';
-		errEl.style.display = 'block';
-		return;
-	}
-
-	signinBtn.disabled = true;
-	signinBtn.textContent = 'Signing in...';
-
-	const body = {
-		username: emailVal,
-		email: emailVal,
-		password: passwordVal
-	};
-
-	try {
-		// ✅ STEP 1: TOKEN LOGIN via Djoser
-		const resp = await fetch('/api/auth/token/login/', {
-			method: 'POST',
-			headers: {
-				'Content-Type': 'application/json',
-				'Accept': 'application/json'
-			},
-			body: JSON.stringify(body)
-		});
-
-		console.log('[Step 1] POST /api/auth/token/login/ status:', resp.status);
-
-		let data = null;
-		try { 
-			data = await resp.json(); 
-		} catch (e) {
-			console.warn('Could not parse JSON:', e);
+		if (!emailVal || !passwordVal) {
+			errEl.textContent = 'Please enter both email and password.';
+			errEl.style.display = 'block';
+			return;
 		}
 
-		console.log('[Step 1] Response body:', data);
+		signinBtn.disabled = true;
+		signinBtn.textContent = 'Signing in...';
 
-		// Extract token from response (Djoser returns auth_token)
-		const token = data && (data.auth_token || data.token || data.access);
+		const body = {
+			username: emailVal,
+			email: emailVal,
+			password: passwordVal
+		};
 
-		if (resp.ok && token) {
-			// ✅ STEP 2: SAVE TOKEN to localStorage
-			localStorage.setItem('token', token);
-			console.log('[Step 2] Saved token to localStorage:', token.substring(0, 10) + '...');
-
-			// ✅ STEP 3: CREATE DJANGO SESSION USING TOKEN
-			const sessionResp = await fetch('/accounts/token-session-login/', {
+		try {
+			const resp = await fetch('/api/auth/token/login/', {
 				method: 'POST',
 				headers: {
-					'Content-Type': 'application/json'
+					'Content-Type': 'application/json',
+					'Accept': 'application/json'
 				},
-				body: JSON.stringify({ token: token })
+				body: JSON.stringify(body)
 			});
 
-			console.log('[Step 3] POST /accounts/token-session-login/ status:', sessionResp.status);
-			const sessionData = await sessionResp.json().catch(() => ({}));
-			console.log('[Step 3] Session response:', sessionData);
-
-			if (sessionResp.ok) {
-				// ✅ STEP 4: REDIRECT TO DASHBOARD
-				console.log('[Step 4] Redirecting to dashboard...');
-				window.location.replace('/accounts/dashboard/');
-				return;
-			} else {
-				throw new Error('Session creation failed: ' + (sessionData.detail || 'Unknown error'));
+			let data = null;
+			try {
+				data = await resp.json();
+			} catch (e) {
+				console.warn('Could not parse JSON:', e);
 			}
-		}
 
-		// ❌ ERROR HANDLING
-		let msg = 'Login failed — check your credentials';
-		if (data) {
-			if (data.detail) msg = data.detail;
-			else if (data.non_field_errors) msg = data.non_field_errors.join(' ');
-			else {
-				const vals = Object.values(data).flat().filter(v => typeof v === 'string');
-				if (vals.length) msg = vals.join(' ');
+			const token = data && (data.auth_token || data.token || data.access);
+
+			if (resp.ok && token) {
+				localStorage.setItem('token', token);
+
+				const sessionResp = await fetch('/accounts/token-session-login/', {
+					method: 'POST',
+					headers: {
+						'Content-Type': 'application/json'
+					},
+					body: JSON.stringify({ token: token })
+				});
+
+				if (sessionResp.ok) {
+					window.location.replace('/accounts/dashboard/');
+					return;
+				} else {
+					throw new Error('Session creation failed');
+				}
 			}
-		} else if (resp.status === 401) {
-			msg = 'Unauthorized — bad email or password';
-		} else if (resp.status === 405) {
-			msg = 'Method not allowed (POST endpoint issue)';
+
+			let msg = 'Login failed — check your credentials';
+			if (data) {
+				if (data.detail) msg = data.detail;
+				else if (data.non_field_errors) msg = data.non_field_errors.join(' ');
+			}
+
+			errEl.textContent = msg;
+			errEl.style.display = 'block';
+
+		} catch (err) {
+			console.error('Login error:', err);
+			errEl.textContent = 'Network error — please try again';
+			errEl.style.display = 'block';
+		} finally {
+			signinBtn.disabled = false;
+			signinBtn.textContent = 'Sign In';
 		}
-
-		errEl.textContent = msg;
-		errEl.style.display = 'block';
-		console.warn('[Error] Login failed:', resp.status, data);
-
-	} catch (err) {
-		console.error('[Exception] Login error:', err);
-		errEl.textContent = 'Network or server error — check console for details.';
-		errEl.style.display = 'block';
-	} finally {
-		signinBtn.disabled = false;
-		signinBtn.textContent = 'Sign In';
 	}
-}
 </script>
+
 {% endblock %}
